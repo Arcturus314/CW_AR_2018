@@ -1,0 +1,167 @@
+*5da39dca869526;
+CRC: 000000 (ok)
+DF 11: All Call Reply.
+  Capability  : 5 (Level 2+3+4 (DF0,4,5,11,20,21,24,code7 - is airborne))
+  ICAO Address: a39dca
+  IID         : II-00
+
+*59a62fd1d70aa4;
+CRC: 000000 (ok)
+DF 11: All Call Reply.
+  Capability  : 1 (Level 2 (DF0,4,5,11))
+  ICAO Address: a62fd1
+  IID         : II-00
+
+*00a1863f273f10;
+CRC: a62fd1 (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 0
+  SL             : 5
+  Altitude       : 9375 feet
+  ICAO Address   : a62fd1
+
+*2000063ffce5ae;
+CRC: a62fd1 (ok)
+DF 4: Surveillance, Altitude Reply.
+  Flight Status  : Normal, Airborne
+  DR             : 0
+  UM             : 0
+  Altitude       : 9375 feet
+  ICAO Address   : a62fd1
+
+*8da39dca99415b22806438f18153;
+CRC: 000000 (ok)
+DF 17: ADS-B message.
+  Capability     : 5 (Level 2+3+4 (DF0,4,5,11,20,21,24,code7 - is airborne))
+  ICAO Address   : a39dca
+  Extended Squitter  Type: 19
+  Extended Squitter  Sub : 1
+  Extended Squitter  Name: Airborne Velocity
+    EW status         : Valid
+    EW velocity       : 346
+    NS status         : Valid
+    NS velocity       : 275
+    Vertical status   : Valid
+    Vertical rate src : 0
+    Vertical rate     : 1536
+
+*02e18db59a9fc8;
+CRC: a39dca (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 1
+  SL             : 7
+  Altitude       : 21125 feet
+  ICAO Address   : a39dca
+
+*8da39dca586f52be97f2fbae9e4d;
+CRC: 000000 (ok)
+DF 17: ADS-B message.
+  Capability     : 5 (Level 2+3+4 (DF0,4,5,11,20,21,24,code7 - is airborne))
+  ICAO Address   : a39dca
+  Extended Squitter  Type: 11
+  Extended Squitter  Sub : 0
+  Extended Squitter  Name: Airborne Position (Baro Altitude)
+    F flag   : even
+    T flag   : non-UTC
+    Altitude : 21125 feet
+    Latitude : 89931 (not decoded)
+    Longitude: 127739 (not decoded)
+
+*00a1863ed8cb19;
+CRC: a62fd1 (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 0
+  SL             : 5
+  Altitude       : 9350 feet
+  ICAO Address   : a62fd1
+
+*00a1863ed8cb19;
+CRC: a62fd1 (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 0
+  SL             : 5
+  Altitude       : 9350 feet
+  ICAO Address   : a62fd1
+
+*00a1863ed8cb19;
+CRC: a62fd1 (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 0
+  SL             : 5
+  Altitude       : 9350 feet
+  ICAO Address   : a62fd1
+
+*8da7debf9915138f28401c6077b5;
+CRC: 000000 (ok)
+DF 17: ADS-B message.
+  Capability     : 5 (Level 2+3+4 (DF0,4,5,11,20,21,24,code7 - is airborne))
+  ICAO Address   : a7debf
+  Extended Squitter  Type: 19
+  Extended Squitter  Sub : 1
+  Extended Squitter  Name: Airborne Velocity
+    EW status         : Valid
+    EW velocity       : -274
+    NS status         : Valid
+    NS velocity       : -120
+    Vertical status   : Valid
+    Vertical rate src : 0
+    Vertical rate     : -960
+
+*00a1863ed8cb19;
+CRC: a62fd1 (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 0
+  SL             : 5
+  Altitude       : 9350 feet
+  ICAO Address   : a62fd1
+
+*00a1863ed8cb19;
+CRC: a62fd1 (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 0
+  SL             : 5
+  Altitude       : 9350 feet
+  ICAO Address   : a62fd1
+
+*00a1863d27230b;
+CRC: a62fd1 (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 0
+  SL             : 5
+  Altitude       : 9325 feet
+  ICAO Address   : a62fd1
+
+*02e18db66577da;
+CRC: a39dca (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 1
+  SL             : 7
+  Altitude       : 21150 feet
+  ICAO Address   : a39dca
+
+*02c187144ee4ed;
+CRC: a7debf (ok)
+DF 0: Short Air-Air Surveillance.
+  VS             : Airborne
+  CC             : 1
+  SL             : 6
+  Altitude       : 10300 feet
+  ICAO Address   : a7debf
+
+*8da7debf5839364de2a168df485c;
+CRC: 000000 (ok)
+DF 17: ADS-B message.
+  Capability     : 5 (Level 2+3+4 (DF0,4,5,11,20,21,24,code7 - is airborne))
+  ICAO Address   : a7debf
+  Extended Squitter  Type: 11
+  Extended Squitter  Sub : 0
+  
