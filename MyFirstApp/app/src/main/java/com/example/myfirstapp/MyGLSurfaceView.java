@@ -20,5 +20,4 @@ class MyGLSurfaceView extends GLSurfaceView {
         setRenderer(mRenderer);
     }
 
-
 }

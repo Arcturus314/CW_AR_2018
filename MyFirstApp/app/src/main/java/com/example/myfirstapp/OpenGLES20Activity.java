@@ -90,8 +90,8 @@ public class OpenGLES20Activity extends Activity {
         }
         public void start() {
             // enable our sensor when the activity is resumed, ask for
-            // 10 ms updates.
-            mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
+            // 0.1 ms updates.
+            mSensorManager.registerListener(this, mRotationVectorSensor, 100);
         }
         public void stop() {
             // make sure to turn our sensor off when the activity is paused
@@ -113,9 +113,9 @@ public class OpenGLES20Activity extends Activity {
 
                 float[] positionVector = {0,0,0};
                 float distance = 5;
-                positionVector[0] = distance*(float)Math.tan(rotationVector[0]);
-                positionVector[1] = distance*(float)Math.tan(rotationVector[1]);
-                positionVector[2] = distance*(float)Math.tan(rotationVector[2]);
+                positionVector[1] = distance*(float)Math.sin(rotationVector[1]);
+                positionVector[2] = distance*(float)Math.sin(rotationVector[2]);
+                positionVector[0] = distance*(float)Math.sin(rotationVector[0]);
                 mTriangle.setPos(positionVector[0],positionVector[1],positionVector[2]);
             }
         }
@@ -211,6 +211,7 @@ public class OpenGLES20Activity extends Activity {
                 mColorBuffer = cbb.asFloatBuffer();
                 mColorBuffer.put(colors);
                 mColorBuffer.position(0);
+                this.setPos(0f, 0f, 0f);
                 //mIndexBuffer = ByteBuffer.allocateDirect(indices.length);
                 //mIndexBuffer.put(indices);
                 //mIndexBuffer.position(0);
