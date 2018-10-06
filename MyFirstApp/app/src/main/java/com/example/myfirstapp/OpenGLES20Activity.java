@@ -113,9 +113,9 @@ public class OpenGLES20Activity extends Activity {
 
                 float[] positionVector = {0,0,0};
                 float distance = 5;
+                positionVector[0] = distance*(float)Math.sin(rotationVector[0]);
                 positionVector[1] = distance*(float)Math.sin(rotationVector[1]);
                 positionVector[2] = distance*(float)Math.sin(rotationVector[2]);
-                positionVector[0] = distance*(float)Math.sin(rotationVector[0]);
                 mTriangle.setPos(positionVector[0],positionVector[1],positionVector[2]);
             }
         }
