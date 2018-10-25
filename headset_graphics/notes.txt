@@ -1,0 +1,5 @@
+Using pyglet for openGL plotting
+
+Initial feature: triangle with text at arbitrary coordinates (x,y,scale). Scale is a calculated value which will change the scale of the triangle to show distance
+
+Targets Epson Moverio bt-35e goggles
