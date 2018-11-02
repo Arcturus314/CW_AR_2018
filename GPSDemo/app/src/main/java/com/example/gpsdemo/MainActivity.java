@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
         //creating the tree object
         tree = new TrackObject(-117.7076, 34.1056, 16);
         //and a reference to the tree switch
-        treeSwitch = (Switch) findViewById(R.id.treeSwitchPhysical);
-
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
 
@@ -84,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
                     user.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
+                    treeSwitch = (Switch) findViewById(R.id.treeSwitchPhysical);
 
                     if (treeSwitch.isChecked()) {
                         changeAltText(Double.toString(user.getDistAlt(tree.getAltitude())));
