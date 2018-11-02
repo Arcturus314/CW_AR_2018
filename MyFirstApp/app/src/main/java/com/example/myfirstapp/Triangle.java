@@ -13,9 +13,9 @@ public class Triangle {
     // number of coordinates per vertex in buffer
     static final int COORDS_PER_VERTEX = 3;
     static float triangleCoords[] = {
-            0.0f, 0.62f, 0.0f,    // top
-            -0.5f, 0.311f, 0.0f,  // bottom left
-            0.5f, -0.311f, 0.0f   // bottom right
+            0.0f, 0.5f, 0.0f,    // top
+            -0.5f, 0f, 0.0f,  // bottom left
+            0.5f, 0f, 0.0f   // bottom right
     };
 
     // define colour: r, g, b, opacity
@@ -107,7 +107,7 @@ public class Triangle {
         GLES20.glUniform4fv(mColourHandle, 1, colour,  0);
 
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMmatrix");
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
         // pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
