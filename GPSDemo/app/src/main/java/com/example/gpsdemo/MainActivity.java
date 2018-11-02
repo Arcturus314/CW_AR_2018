@@ -12,6 +12,8 @@ import android.location.LocationManager;
 import android.location.LocationListener;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,11 +23,14 @@ public class MainActivity extends AppCompatActivity {
 
     public TrackObject user;    //the current position of the User
     public TrackObject userRef; //the initial position of the User
+    public TrackObject tree;
     public boolean userLocationSet = false;
 
     public double latitude;
     public double longitude;
     public double altitude;
+
+    public Switch treeSwitch;
 
 
     public void sendMessage(View view) {
@@ -38,8 +43,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //creating the tree object
+        tree = new TrackObject(-117.7076, 34.1056, 16);
+        //and a reference to the tree switch
+        treeSwitch = (Switch) findViewById(R.id.treeSwitchPhysical);
+
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
+
 
             public void onLocationChanged(Location location) {
 
@@ -73,9 +84,17 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
                     user.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
-                    changeAltText(Double.toString(user.getDistAlt(userRef.getAltitude())));
-                    changeLongText(Double.toString(user.getDistLon(userRef.getLongitude())));
-                    changeLatText(Double.toString(user.getDistLat(userRef.getLatitude())));
+
+                    if (treeSwitch.isChecked()) {
+                        changeAltText(Double.toString(user.getDistAlt(tree.getAltitude())));
+                        changeLongText(Double.toString(user.getDistLon(tree.getLongitude())));
+                        changeLatText(Double.toString(user.getDistLat(tree.getLatitude())));
+                    }
+                    else {
+                        changeAltText(Double.toString(user.getDistAlt(userRef.getAltitude())));
+                        changeLongText(Double.toString(user.getDistLon(userRef.getLongitude())));
+                        changeLatText(Double.toString(user.getDistLat(userRef.getLatitude())));
+                    }
                 }
             }
 
