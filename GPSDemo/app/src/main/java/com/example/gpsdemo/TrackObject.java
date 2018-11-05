@@ -121,5 +121,12 @@ public class TrackObject {
         return Math.sqrt(distLon*distLon + distLat*distLat + distAlt*distAlt);
     }
 
+    public double getTotalDistance(TrackObject reference) {
+        double distLon = getDistLon(reference.getLongitude());
+        double distLat = getDistLat(reference.getLatitude());
+        double distAlt = getDistAlt(reference.getAltitude());
+
+        return Math.sqrt(distLon*distLon + distLat*distLat + distAlt*distAlt);
+    }
 
 }
