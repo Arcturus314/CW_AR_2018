@@ -28,8 +28,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
-    private float[] mRotationMatrix = new float[16];
     private float[] lookAtVector = new float[3];
+    private final float HORIZONTAL_SCALE_FACTOR = 1.9f;
+    private final float VERTICAL_SCALE_FACTOR = 3.75f;
     Context mContext;
 
     public MyGLRenderer(Context context) {
@@ -74,13 +75,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             float[] eulerAngles = quaternionToEuler(event.values);
             // because of the sensor orientation on the glasses,
             Log.i("eulerAngleReadings: ", "pitch: " + eulerAngles[2] + " yaw " + eulerAngles[1] + " roll " + eulerAngles[0]);
-            lookAtVector[1] = (float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]));
-            lookAtVector[0] = (float) Math.sin((eulerAngles[1]));
-            lookAtVector[2] = (float) ( Math.cos(eulerAngles[2]) * Math.sin(eulerAngles[1]));
+            lookAtVector[0] = (float) Math.sin((eulerAngles[1])); // yaw projection
+            lookAtVector[1] = (float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]) ); // pitch projection
+            if (lookAtVector[0] > 1.4f) {
+                lookAtVector[1] = 1.4f;
+            } else if (lookAtVector[0] < -1.4f) {
+                lookAtVector[1] = -1.4f;
+            }
+            lookAtVector[2] = (float) ( Math.cos(eulerAngles[2]) * Math.sin(eulerAngles[1]) ); // roll
             // set camera position
             // parametres to this function populate the view matrix appropriately
-            // make X the up vector because we define pitch to be rotation of glasses around horizo
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, distance*lookAtVector[0], distance*lookAtVector[1], 0, 0, 1.0f, 0f);
+            // make X the up vector because we define pitch to be rotation of glasses around horizontal
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
+                    VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
         }
     }
 

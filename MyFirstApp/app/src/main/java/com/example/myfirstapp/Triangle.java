@@ -13,9 +13,9 @@ public class Triangle {
     // number of coordinates per vertex in buffer
     static final int COORDS_PER_VERTEX = 3;
     static float triangleCoords[] = {
-            0.0f, 0.5f, 0.0f,    // top
-            -0.5f, 0f, 0.0f,  // bottom left
-            0.5f, 0f, 0.0f   // bottom right
+            0.0f, 0.1f, 0.0f,    // top
+            -0.1f, 0f, 0.0f,  // bottom left
+            0.1f, 0f, 0.0f   // bottom right
     };
 
     // define colour: r, g, b, opacity
