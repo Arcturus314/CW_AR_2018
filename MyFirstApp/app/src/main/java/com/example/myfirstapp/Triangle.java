@@ -59,6 +59,9 @@ public class Triangle {
     private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
+    // gps coordinates for the triangle
+    private float[] gpsCoords = new float[3];
+
     public Triangle() {
         // initialise ByteBuffer for triangle coordinates
         // allocate 4 bytes (float) for all coordinates
@@ -119,4 +122,7 @@ public class Triangle {
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
 
+    public float[] getGpsCoords() {
+        return gpsCoords;
+    }
 }
