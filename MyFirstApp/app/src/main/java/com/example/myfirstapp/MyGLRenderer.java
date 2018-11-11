@@ -122,7 +122,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // this projection matrix is applied to object coordinates in the onDrawFrame() method
         // this code populates a projection matrix to only render objects in the given frustrum
-        Matrix.frustumM(mProjectionMatrix, 0, -1, 1, -1, 1, 3, 7);
+        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 3, 7);
+//        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
 
     public static int loadShader(int type, String shaderCode) {
