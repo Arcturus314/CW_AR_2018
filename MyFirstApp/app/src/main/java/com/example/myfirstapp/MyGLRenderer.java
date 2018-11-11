@@ -77,14 +77,23 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     }
 
     public void onDrawFrame(GL10 unused) {
+        // Create a rotation transformation for the triangle
+        long time = SystemClock.uptimeMillis() % 4000L;
+        float angle = 0.090f * ((int) time);
+
+        float[] mRotationMatrix = new float[16];
+        float[] scratch = new float[16];
         //Matrix.setRotateM(mRotationMatrix, 0, angle, 0, 0, -1.0f);
         // redraw background colour
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
-        Matrix.multiplyMM(modelViewMatrix, 0, mViewMatrix, 0, mTranslateM, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, modelViewMatrix, 0);
-        //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
-        mTriangle.draw(mMVPMatrix);
+        Matrix.setIdentityM(mTranslateM, 0);
+        Matrix.translateM(mTranslateM, 0, 2, 2, 10);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+        //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
+
+        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
+        mTriangle.draw(scratch);
     }
 
     @Override
@@ -122,7 +131,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // this projection matrix is applied to object coordinates in the onDrawFrame() method
         // this code populates a projection matrix to only render objects in the given frustrum
-        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 3, 7);
+        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 50);
 //        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
 
