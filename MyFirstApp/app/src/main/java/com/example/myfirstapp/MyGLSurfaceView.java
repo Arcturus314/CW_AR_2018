@@ -6,7 +6,7 @@ import android.content.Context;
 
 class MyGLSurfaceView extends GLSurfaceView {
 
-    private final MyGLRenderer mRenderer;
+    public final MyGLRenderer mRenderer;
 
     public MyGLSurfaceView(Context context){
         super(context);
@@ -19,5 +19,7 @@ class MyGLSurfaceView extends GLSurfaceView {
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);
     }
+
+
 
 }

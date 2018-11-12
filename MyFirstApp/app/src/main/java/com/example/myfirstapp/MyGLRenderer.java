@@ -13,6 +13,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
+import java.lang.Math;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -43,7 +44,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // scale factors for translating objects based on sensor readings
     // determined experimentally to create nice FOV
     private final float HORIZONTAL_SCALE_FACTOR = 1.9f;
-    private final float VERTICAL_SCALE_FACTOR = 3.75f;
+    private final float VERTICAL_SCALE_FACTOR = 2.5f;
 
     // Context object so that we can access sensor data in the renderer class
     Context mContext;
@@ -52,8 +53,29 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // these live in the renderer class for now, but we can elaborate a better heirarchy later
     private float[] gpsCoords = new float[3];
 
+
+    //last set of n coordinates to average (FIR filter)
+    private int numVectorsForFIR = 10;
+    private float[] rollVectors  = new float[numVectorsForFIR];
+    private float[] pitchVectors = new float[numVectorsForFIR];
+    private float[] yawVectors   = new float[numVectorsForFIR];
+
+    //GPS distances
+    private float longDist;
+    private float latDist;
+    private float altDist;
+
     public MyGLRenderer(Context context) {
         mContext = context;
+    }
+
+
+    public void setGPSDist(float latDist, float longDist, float altDist) {
+        if(latDist != -1f && longDist != -1f && altDist != -1f) {
+            this.latDist = latDist;
+            this.longDist = longDist;
+            this.altDist = altDist;
+        }
     }
 
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -72,7 +94,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         // will get updated based on GPS locations
         gpsCoords[0] = 0f;
         gpsCoords[1] = 0f;
-        gpsCoords[2] = -5f;
+        gpsCoords[2] = 1f;
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, lookAtVector[0], lookAtVector[1], lookAtVector[2], 0f, 1.0f, 0f);
     }
 
@@ -88,12 +110,37 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
         Matrix.setIdentityM(mTranslateM, 0);
-        Matrix.translateM(mTranslateM, 0, 2, 2, 10);
+        //Matrix.translateM(mTranslateM, 0, 2, 2, 10);
+        Matrix.translateM(mTranslateM, 0, longDist, latDist, altDist);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
         Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
         mTriangle.draw(scratch);
+    }
+
+    //calculates the new output of a FIR given an input vector
+    public float calcNextFIR(float newVal, float[] valArr) {
+        //adding new value to FIR arr
+        float[] newArr = new float[numVectorsForFIR];
+        newArr[0] = newVal;
+        for(int i = 0; i < numVectorsForFIR-1; i++) {
+            newArr[i+1] = valArr[i];
+        }
+        for(int i = 0; i < numVectorsForFIR; i++) {
+            valArr[i] = newArr[i];
+        }
+        //calculating value to return
+        //using decaying powers of 2 right now
+        float valSum = 0;
+        float total  = 0;
+        for(int i = 0; i < numVectorsForFIR; i++) {
+            float multFactor = (float) Math.pow(2, -1*i);
+            valSum += newArr[i]*multFactor;
+            total  += multFactor;
+        }
+        return valSum/total;
+
     }
 
     @Override
@@ -108,14 +155,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             float[] eulerAngles = quaternionToEuler(event.values);
             // because of the sensor orientation on the glasses,
             Log.i("eulerAngleReadings: ", "pitch: " + eulerAngles[2] + " yaw " + eulerAngles[1] + " roll " + eulerAngles[0]);
-            lookAtVector[0] = (float) Math.sin((eulerAngles[1])); // yaw projection
-            lookAtVector[1] = (float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]) ); // pitch projection
+            lookAtVector[0] = calcNextFIR((float) Math.sin((eulerAngles[1])), yawVectors); // yaw projection
+            lookAtVector[1] = calcNextFIR((float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]) ), pitchVectors); // pitch projection
             if (lookAtVector[0] > 1.4f) {
                 lookAtVector[1] = 1.4f;
             } else if (lookAtVector[0] < -1.4f) {
                 lookAtVector[1] = -1.4f;
             }
-            lookAtVector[2] = (float) ( Math.cos(eulerAngles[2]) * Math.sin(eulerAngles[1]) ); // roll
+            lookAtVector[2] = calcNextFIR((float) ( Math.cos(eulerAngles[2]) * Math.sin(eulerAngles[1]) ), rollVectors); // roll
             // set camera position
             // parametres to this function populate the view matrix appropriately
             // make X the up vector because we define pitch to be rotation of glasses around horizontal
