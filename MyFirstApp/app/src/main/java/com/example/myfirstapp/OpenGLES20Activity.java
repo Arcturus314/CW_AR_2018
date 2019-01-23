@@ -69,7 +69,7 @@ public class OpenGLES20Activity extends Activity {
         tree = new TrackObject(-117.7076, 34.1056, 16+369); //base of tree is 369 meters off the ground
         //and a reference to the tree switch
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        
+
         locationListener = new LocationListener() {
 
 
