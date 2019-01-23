@@ -41,6 +41,7 @@ import android.location.LocationListener;
 public class OpenGLES20Activity extends Activity {
 
     private GLSurfaceView mGLView;
+    private MyGLRenderer mRenderer;
 
     public LocationManager locationManager;
     public LocationListener locationListener;
@@ -58,14 +59,17 @@ public class OpenGLES20Activity extends Activity {
         super.onCreate(savedInstanceState);
         // create a GLSurfaceView instance and
         // set it as the ContentView for this Activity
+        mRenderer = new MyGLRenderer(this);
         mGLView = new MyGLSurfaceView(this);
+        mGLView.setRenderer(mRenderer);
         setContentView(mGLView);
 
-        mGLView.mRenderer.setGPSDist(-1f,-1f,-1f);
+        mRenderer.setGPSDist(-1f,-1f,-1f);
 
         tree = new TrackObject(-117.7076, 34.1056, 16+369); //base of tree is 369 meters off the ground
         //and a reference to the tree switch
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        
         locationListener = new LocationListener() {
 
 
@@ -99,7 +103,7 @@ public class OpenGLES20Activity extends Activity {
                     float altDist = (float) user.getDistAlt(tree.getAltitude());
                     float longDist = (float) user.getDistLon(tree.getLongitude());
                     float latDist = (float) user.getDistLat(tree.getLatitude());
-                    mGLView.mRenderer.setGPSDist(latDist, longDist, altDist);
+                    mRenderer.setGPSDist(latDist, longDist, altDist);
                     }
                 }
                 public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -107,6 +111,7 @@ public class OpenGLES20Activity extends Activity {
                 public void onProviderEnabled(String provider) {}
 
                 public void onProviderDisabled(String provider) {}
+
             };
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)

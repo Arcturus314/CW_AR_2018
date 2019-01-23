@@ -155,6 +155,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             float[] eulerAngles = quaternionToEuler(event.values);
             // because of the sensor orientation on the glasses,
             Log.i("eulerAngleReadings: ", "pitch: " + eulerAngles[2] + " yaw " + eulerAngles[1] + " roll " + eulerAngles[0]);
+            Log.i("GPS: ", "lat: " + latDist + " long: " + longDist + " alt: " + altDist);
             lookAtVector[0] = calcNextFIR((float) Math.sin((eulerAngles[1])), yawVectors); // yaw projection
             lookAtVector[1] = calcNextFIR((float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]) ), pitchVectors); // pitch projection
             if (lookAtVector[0] > 1.4f) {
