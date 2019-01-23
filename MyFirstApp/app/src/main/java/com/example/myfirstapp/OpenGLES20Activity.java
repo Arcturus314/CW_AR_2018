@@ -55,6 +55,8 @@ public class OpenGLES20Activity extends Activity {
     public double longitude;
     public double altitude;
 
+    public final float requiredAccuracy = 20; //estimate must be 20m accurate to begin tracking
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // create a GLSurfaceView instance and
@@ -93,9 +95,11 @@ public class OpenGLES20Activity extends Activity {
 
                 //setting position of the user after acquiring initial location
                 if (userLocationSet == false) {
-                    userRef = new TrackObject(location.getLongitude(), location.getLatitude(), location.getAltitude());
-                    user = new TrackObject(location.getLongitude(), location.getLatitude(), location.getAltitude());
-                    userLocationSet = true;
+                    if (location.getAccuracy() < requiredAccuracy) {
+                        userRef = new TrackObject(location.getLongitude(), location.getLatitude(), location.getAltitude());
+                        user = new TrackObject(location.getLongitude(), location.getLatitude(), location.getAltitude());
+                        userLocationSet = true;
+                    }
                 }
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
