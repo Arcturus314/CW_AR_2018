@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 //imports related to GPS
@@ -66,7 +67,13 @@ public class OpenGLES20Activity extends Activity {
         mGLView.setRenderer(mRenderer);
         setContentView(mGLView);
 
-        mRenderer.setGPSDist(-1f,-1f,-1f);
+        //mRenderer.setGPSDist(-1f,-1f,-1f);
+        //redoing w/ async inter-thread communication. It's alright if GPS position is a few ms out of sync.
+        mGLView.queueEvent(new Runnable() {
+            public void run()   {
+                mRenderer.setGPSDist(-1f, -1f, -1f);
+            }}
+        );
 
         tree = new TrackObject(-117.7076, 34.1056, 16+369); //base of tree is 369 meters off the ground
         //and a reference to the tree switch
@@ -96,19 +103,29 @@ public class OpenGLES20Activity extends Activity {
                 //setting position of the user after acquiring initial location
                 if (userLocationSet == false) {
                     if (location.getAccuracy() < requiredAccuracy) {
+                        Log.i("GPS Setup Status: ", "at required accuracy. Current accuracy: " + location.getAccuracy());
                         userRef = new TrackObject(location.getLongitude(), location.getLatitude(), location.getAltitude());
                         user = new TrackObject(location.getLongitude(), location.getLatitude(), location.getAltitude());
                         userLocationSet = true;
+                    }
+                    else {
+                        Log.i("GPS Setup Status: ", "not yet at required accuracy. Current accuracy: " + location.getAccuracy());
                     }
                 }
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
                     user.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
-                    float altDist = (float) user.getDistAlt(tree.getAltitude());
-                    float longDist = (float) user.getDistLon(tree.getLongitude());
-                    float latDist = (float) user.getDistLat(tree.getLatitude());
-                    mRenderer.setGPSDist(latDist, longDist, altDist);
-                    }
+                    final float altDist = (float) user.getDistAlt(tree.getAltitude());
+                    final float longDist = (float) user.getDistLon(tree.getLongitude());
+                    final float latDist = (float) user.getDistLat(tree.getLatitude());
+                    //mRenderer.setGPSDist(latDist, longDist, altDist);
+                    mGLView.queueEvent(new Runnable() {
+                        public void run()   {
+                            mRenderer.setGPSDist(latDist, longDist, altDist);
+                        }}
+                    );
+
+                }
                 }
                 public void onStatusChanged(String provider, int status, Bundle extras) {}
 
