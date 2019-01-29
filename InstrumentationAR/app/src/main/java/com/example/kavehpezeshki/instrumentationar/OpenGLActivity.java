@@ -22,17 +22,18 @@ import android.location.LocationListener;
 
 public class OpenGLActivity extends Activity{
     private MyGLSurfaceView mSurfaceView;
-    private MyGLRenderer  mGLRenderer;
+    private MyGLRenderer  mRenderer;
 
     public void onCreate(Bundle savedInstanceState) {
         //restoring previous instance
         super.onCreate(savedInstanceState);
 
+        //creating the renderer and surfaceview
+        mRenderer    = new MyGLRenderer(this);
         mSurfaceView = new MyGLSurfaceView(this);
-        //this creates the renderer
-        mSurfaceView.start();
+        //setting the mSurfaceView renderer to the instantiated mRenderer object
+        mSurfaceView.start(mRenderer);
         setContentView(mSurfaceView);
     }
-
 
 }

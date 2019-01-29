@@ -143,6 +143,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     }
 
+    //logging variables
+    float maxPitch = 0;
+    float minPitch = 400;
+    float maxYaw   = 0;
+    float minYaw   = 400;
+    float maxRoll  = 0;
+    float minRoll  = 400;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         // we received a sensor event. it is a good practice to check
@@ -153,17 +161,42 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // rotation-vector, which is what we want.
             float distance = 5f;
             float[] eulerAngles = quaternionToEuler(event.values);
+
+            //logging stuff
+            float pitch = Math.round(eulerAngles[2]*180/3.141592);
+            float yaw   = Math.round(eulerAngles[1]*180/3.141592);
+            float roll  = Math.round(eulerAngles[0]*180/3.141592);
+
+            //calculating minimum and maximum vals
+            //maxes
+            if (pitch > maxPitch) maxPitch = pitch;
+            if (yaw   > maxYaw)   maxYaw   = yaw;
+            if (roll  > maxRoll)  maxRoll  = roll;
+            //mins
+            if (pitch < minPitch) minPitch = pitch;
+            if (yaw   < minYaw)   minYaw   = yaw;
+            if (roll  < minRoll)  minRoll  = roll;
+
             // because of the sensor orientation on the glasses,
-            Log.i("eulerAngleReadings: ", "pitch: " + eulerAngles[2] + " yaw " + eulerAngles[1] + " roll " + eulerAngles[0]);
-            Log.i("GPS: ", "lat: " + latDist + " long: " + longDist + " alt: " + altDist);
+            //Log.i("eulerAngleReadings: ", "pitch: " + pitch + " yaw " + yaw + " roll " + roll + " | eulerMinMax: " + "pitch: " + minPitch + " " + maxPitch + " yaw: " + minYaw + " " + maxYaw + " roll: " + minRoll + " " + maxRoll);
+           // Log.i("eulerMinMax: ", "pitch: " + minPitch + " " + maxPitch + " yaw: " + minYaw + " " + maxYaw + " roll: " + minRoll + " " + maxRoll);
+
+            //Log.i("GPS: ", "lat: " + latDist + " long: " + longDist + " alt: " + altDist);
             lookAtVector[0] = calcNextFIR((float) Math.sin((eulerAngles[1])), yawVectors); // yaw projection
             lookAtVector[1] = calcNextFIR((float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]) ), pitchVectors); // pitch projection
             if (lookAtVector[0] > 1.4f) {
+                Log.i("what's happening??: ", "greater than 1.4");
                 lookAtVector[1] = 1.4f;
             } else if (lookAtVector[0] < -1.4f) {
+                Log.i("what's happening??: ", "less than 1.4");
                 lookAtVector[1] = -1.4f;
             }
             lookAtVector[2] = calcNextFIR((float) ( Math.cos(eulerAngles[2]) * Math.sin(eulerAngles[1]) ), rollVectors); // roll
+
+            //creating string instance of lookAtVector
+            String lookAtString = "" + lookAtVector[0] + " " + lookAtVector[1] + " " + lookAtVector[2];
+
+            Log.i("LookAtVector: ", lookAtString);
             // set camera position
             // parametres to this function populate the view matrix appropriately
             // make X the up vector because we define pitch to be rotation of glasses around horizontal

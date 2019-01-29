@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/GVR_moverio_test.unity
+  isLoaded: 1
+  isActive: 1
