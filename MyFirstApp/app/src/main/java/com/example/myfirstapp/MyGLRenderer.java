@@ -67,27 +67,33 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     public void onSensorChanged(SensorEvent event) {
         // we received a sensor event. it is a good practice to check
         // that we received the proper event
+        float [] rotationMatrix = new float[16];
+        float [] remappedRot = new float[16];
+        float [] orientationVector = new float[3];
+        float pitch, yaw, roll;
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             // convert the rotation-vector to a 4x4 matrix. the matrix
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
             float distance = 5f;
-            float[] eulerAngles = quaternionToEuler(event.values);
-            // because of the sensor orientation on the glasses,
-            Log.i("eulerAngleReadings: ", "pitch: " + eulerAngles[2] + " yaw " + eulerAngles[1] + " roll " + eulerAngles[0]);
-            lookAtVector[0] = (float) Math.sin((eulerAngles[1])); // yaw projection
-            lookAtVector[1] = (float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]) ); // pitch projection
-            if (lookAtVector[0] > 1.4f) {
-                lookAtVector[1] = 1.4f;
-            } else if (lookAtVector[0] < -1.4f) {
-                lookAtVector[1] = -1.4f;
-            }
-            lookAtVector[2] = (float) ( Math.cos(eulerAngles[2]) * Math.sin(eulerAngles[1]) ); // roll
+            https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
+            SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);
+            // orientationVector[0] = YAW north = 0, south = pi, east = pi/2, west = -pi/2
+            // orientationVector[1] = PITCH sky = -pi/2, earth = pi/2 ish
+            // orientationVector[2] = roll
+            SensorManager.getOrientation(remappedRot, orientationVector);
+            pitch = orientationVector[1];
+            yaw = orientationVector[0];
+            roll = orientationVector[2];
+            Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
+            // https://learnopengl.com/Getting-started/Camera
+            lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
+            lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
+            lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
             // set camera position
-            // parametres to this function populate the view matrix appropriately
-            // make X the up vector because we define pitch to be rotation of glasses around horizontal
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-                    VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -6, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
+                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
         }
     }
 
@@ -110,16 +116,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         return shader;
     }
-    /*
-     * Taken from: https://stackoverflow.com/questions/30279065/how-to-get-the-euler-angles-from-the-rotation-vector-sensor-type-rotation-vecto
-     */
-    float[] quaternionToEuler(float[] q) {
-        float psi = (float) Math.atan2( -2.*(q[2]*q[3] - q[0]*q[1]) , q[0]*q[0] - q[1]*q[1]- q[2]*q[2] + q[3]*q[3]);
-        float theta = (float) Math.asin( 2.*(q[1]*q[3] + q[0]*q[2]));
-        float phi = (float) Math.atan2( 2.*(-q[1]*q[2] + q[0]*q[3]) , q[0]*q[0] + q[1]*q[1] - q[2]*q[2] - q[3]*q[3]);
-        float [] eulerAngles = {psi, theta, phi};
-        return eulerAngles;
-    }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
