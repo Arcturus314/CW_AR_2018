@@ -43,8 +43,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     // scale factors for translating objects based on sensor readings
     // determined experimentally to create nice FOV
-    private final float HORIZONTAL_SCALE_FACTOR = 1.9f;
-    private final float VERTICAL_SCALE_FACTOR = 2.5f;
+    private final float HORIZONTAL_SCALE_FACTOR = 5f;
+    private final float VERTICAL_SCALE_FACTOR = 5f;
 
     // Context object so that we can access sensor data in the renderer class
     Context mContext;
