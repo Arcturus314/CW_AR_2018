@@ -155,53 +155,33 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     public void onSensorChanged(SensorEvent event) {
         // we received a sensor event. it is a good practice to check
         // that we received the proper event
+        float [] rotationMatrix = new float[16];
+        float [] remappedRot = new float[16];
+        float [] orientationVector = new float[3];
+        float pitch, yaw, roll;
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             // convert the rotation-vector to a 4x4 matrix. the matrix
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
             float distance = 5f;
-            float[] eulerAngles = quaternionToEuler(event.values);
-
-            //logging stuff
-            float pitch = Math.round(eulerAngles[2]*180/3.141592);
-            float yaw   = Math.round(eulerAngles[1]*180/3.141592);
-            float roll  = Math.round(eulerAngles[0]*180/3.141592);
-
-            //calculating minimum and maximum vals
-            //maxes
-            if (pitch > maxPitch) maxPitch = pitch;
-            if (yaw   > maxYaw)   maxYaw   = yaw;
-            if (roll  > maxRoll)  maxRoll  = roll;
-            //mins
-            if (pitch < minPitch) minPitch = pitch;
-            if (yaw   < minYaw)   minYaw   = yaw;
-            if (roll  < minRoll)  minRoll  = roll;
-
-            // because of the sensor orientation on the glasses,
-            //Log.i("eulerAngleReadings: ", "pitch: " + pitch + " yaw " + yaw + " roll " + roll + " | eulerMinMax: " + "pitch: " + minPitch + " " + maxPitch + " yaw: " + minYaw + " " + maxYaw + " roll: " + minRoll + " " + maxRoll);
-           // Log.i("eulerMinMax: ", "pitch: " + minPitch + " " + maxPitch + " yaw: " + minYaw + " " + maxYaw + " roll: " + minRoll + " " + maxRoll);
-
-            //Log.i("GPS: ", "lat: " + latDist + " long: " + longDist + " alt: " + altDist);
-            lookAtVector[0] = calcNextFIR((float) Math.sin((eulerAngles[1])), yawVectors); // yaw projection
-            lookAtVector[1] = calcNextFIR((float) ( Math.cos(eulerAngles[2]) * Math.cos(eulerAngles[1]) ), pitchVectors); // pitch projection
-            if (lookAtVector[0] > 1.4f) {
-                Log.i("what's happening??: ", "greater than 1.4");
-                lookAtVector[1] = 1.4f;
-            } else if (lookAtVector[0] < -1.4f) {
-                Log.i("what's happening??: ", "less than 1.4");
-                lookAtVector[1] = -1.4f;
-            }
-            lookAtVector[2] = calcNextFIR((float) ( Math.cos(eulerAngles[2]) * Math.sin(eulerAngles[1]) ), rollVectors); // roll
-
-            //creating string instance of lookAtVector
-            String lookAtString = "" + lookAtVector[0] + " " + lookAtVector[1] + " " + lookAtVector[2];
-
-            Log.i("LookAtVector: ", lookAtString);
+            https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
+            SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);
+            // orientationVector[0] = YAW north = 0, south = pi, east = pi/2, west = -pi/2
+            // orientationVector[1] = PITCH sky = -pi/2, earth = pi/2 ish
+            // orientationVector[2] = roll
+            SensorManager.getOrientation(remappedRot, orientationVector);
+            pitch = orientationVector[1];
+            yaw = orientationVector[0];
+            roll = orientationVector[2];
+            Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
+            // https://learnopengl.com/Getting-started/Camera
+            lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
+            lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
+            lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
             // set camera position
-            // parametres to this function populate the view matrix appropriately
-            // make X the up vector because we define pitch to be rotation of glasses around horizontal
             Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-                    VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
         }
     }
 
