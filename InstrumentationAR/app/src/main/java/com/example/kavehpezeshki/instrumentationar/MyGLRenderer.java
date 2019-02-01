@@ -43,8 +43,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     // scale factors for translating objects based on sensor readings
     // determined experimentally to create nice FOV
-    private final float HORIZONTAL_SCALE_FACTOR = 1.9f;
-    private final float VERTICAL_SCALE_FACTOR = 2.5f;
+    private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
+    private final float VERTICAL_SCALE_FACTOR = 4.7f;
 
     // Context object so that we can access sensor data in the renderer class
     Context mContext;
@@ -110,7 +110,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
         Matrix.setIdentityM(mTranslateM, 0);
-        //Matrix.translateM(mTranslateM, 0, 2, 2, 10);
         Matrix.translateM(mTranslateM, 0, longDist, latDist, altDist);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
