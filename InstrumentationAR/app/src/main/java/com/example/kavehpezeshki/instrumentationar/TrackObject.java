@@ -23,6 +23,7 @@ public class TrackObject {
     //Represents the height of the object from the surface of the Earth, given in meters
     private double altitude;
 
+
     /*
     Constructor for the TrackObject class
 

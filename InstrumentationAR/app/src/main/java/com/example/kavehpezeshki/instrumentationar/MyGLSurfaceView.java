@@ -2,6 +2,7 @@ package com.example.kavehpezeshki.instrumentationar;
 
 import android.opengl.GLSurfaceView;
 import android.content.Context;
+import android.util.Log;
 
 public class MyGLSurfaceView extends GLSurfaceView {
     private MyGLRenderer mRenderer;
@@ -23,6 +24,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
         this.latDist = latDist;
         this.longDist = longDist;
         this.altDist = altDist;
+        Log.i("GPS Setup Status: ", "Setting GPS Position to: " + this.latDist + " " + this.longDist + " " + this.altDist);
         queueEvent(new Runnable() {
             public void run() {
                 mRenderer.setPos(MyGLSurfaceView.latDist, MyGLSurfaceView.longDist, MyGLSurfaceView.altDist);
