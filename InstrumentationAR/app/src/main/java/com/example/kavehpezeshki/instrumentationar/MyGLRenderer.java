@@ -74,11 +74,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
 
     public void setPos(float latDist, float longDist, float altDist) {
+        Log.i("GPS Setup Status: ", "Starting setPos");
         if(latDist != -1f && longDist != -1f && altDist != -1f) {
             this.latDist = latDist;
             this.longDist = longDist;
             this.altDist = altDist;
+            Log.i("GPS Setup Status: ", "setPos: Updating values " + this.latDist + " " + this.longDist + " " + this.altDist);
         }
+        Log.i("GPS Setup Status: ", "Ending setPos");
     }
 
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -103,9 +106,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     public void onDrawFrame(GL10 unused) {
         // Create a rotation transformation for the triangle
+        //Log.i("GPS Setup Status: ", "setPos: Rendering");
         long time = SystemClock.uptimeMillis() % 4000L;
         float angle = 0.090f * ((int) time);
-
         float[] mRotationMatrix = new float[16];
         float[] scratch = new float[16];
         //Matrix.setRotateM(mRotationMatrix, 0, angle, 0, 0, -1.0f);
@@ -119,6 +122,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
         mTriangle.draw(scratch);
+        Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
+
+    }
+
+    public String print16ArrByElement(float[] input) {
+        String output = "";
+        for(int i = 0; i < 16; i++) {
+            output += input[i] + " ";
+        }
+        return output;
     }
 
     //calculates the new output of a FIR given an input vector

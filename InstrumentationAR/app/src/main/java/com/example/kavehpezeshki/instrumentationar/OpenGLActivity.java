@@ -76,11 +76,12 @@ public class OpenGLActivity extends Activity{
                     final float altDist = Math.abs((float) userCurr.getDistAlt(tree.getAltitude())/100);
                     final float longDist = Math.abs((float) userCurr.getDistLon(tree.getLongitude())/100);
                     final float latDist = Math.abs((float) userCurr.getDistLat(tree.getLatitude())/100);
+                    mRenderer.setPos(1f, 2.5f, 0.3f);
                     //mSurfaceView.setRendererPosSingleThread(1f, 2.5f, 0.3f);
                     //mSurfaceView.setRendererPosSingleThread(latDist, longDist, altDist);
                     //mSurfaceView.setRendererPos(latDist, longDist, altDist);
 
-                    mSurfaceView.setRendererPos(1f, 2.5f, 0.3f);
+                   // mSurfaceView.setRendererPos(1f, 2.5f, 0.3f);
                 }
             }
 
