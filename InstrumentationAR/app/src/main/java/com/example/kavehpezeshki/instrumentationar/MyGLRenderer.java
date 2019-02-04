@@ -43,8 +43,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     // scale factors for translating objects based on sensor readings
     // determined experimentally to create nice FOV
-    private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
-    private final float VERTICAL_SCALE_FACTOR = 4.7f;
+    //private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
+    //private final float VERTICAL_SCALE_FACTOR = 4.7f;
+    private final float HORIZONTAL_SCALE_FACTOR = 1f;
+    private final float VERTICAL_SCALE_FACTOR = 1f;
 
     // Context object so that we can access sensor data in the renderer class
     Context mContext;
@@ -61,9 +63,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     private float[] yawVectors   = new float[numVectorsForFIR];
 
     //GPS distances
-    private float longDist;
-    private float latDist;
-    private float altDist;
+    private float longDist = 1f; //north-south  currently north-south, correct
+    private float latDist = 2.5f; //east-west     currently up-down, fixed and now correct
+    private float altDist = 0.3f; //up-down      currently east-west, fixed and now correct
+
 
     public MyGLRenderer(Context context) {
         mContext = context;
@@ -110,7 +113,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
         Matrix.setIdentityM(mTranslateM, 0);
-        Matrix.translateM(mTranslateM, 0, longDist, latDist, altDist);
+        Matrix.translateM(mTranslateM, 0, longDist, altDist, latDist);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
@@ -162,7 +165,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // convert the rotation-vector to a 4x4 matrix. the matrix
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
-            float distance = 5f;
+            //float distance = 5f; TODO: fix this
+            float distance = (float) Math.sqrt(gpsCoords[0]*gpsCoords[0] + gpsCoords[1]*gpsCoords[1] + gpsCoords[2]*gpsCoords[2]);
             https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);

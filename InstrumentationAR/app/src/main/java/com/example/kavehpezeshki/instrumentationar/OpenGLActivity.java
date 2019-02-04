@@ -71,10 +71,16 @@ public class OpenGLActivity extends Activity{
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
                     userCurr.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
-                    final float altDist = (float) userCurr.getDistAlt(tree.getAltitude());
-                    final float longDist = (float) userCurr.getDistLon(tree.getLongitude());
-                    final float latDist = (float) userCurr.getDistLat(tree.getLatitude());
-                    mSurfaceView.setRendererPos(latDist, longDist, altDist);
+                    //TODO: this experimental code needs to be returned to normal
+                    Log.i("GPS Setup Status: ", "Setting Single Thread GPS Position (raw) to: " + location.getLongitude() + " " + location.getLatitude() + " " + location.getAltitude());
+                    final float altDist = Math.abs((float) userCurr.getDistAlt(tree.getAltitude())/100);
+                    final float longDist = Math.abs((float) userCurr.getDistLon(tree.getLongitude())/100);
+                    final float latDist = Math.abs((float) userCurr.getDistLat(tree.getLatitude())/100);
+                    //mSurfaceView.setRendererPosSingleThread(1f, 2.5f, 0.3f);
+                    //mSurfaceView.setRendererPosSingleThread(latDist, longDist, altDist);
+                    //mSurfaceView.setRendererPos(latDist, longDist, altDist);
+
+                    mSurfaceView.setRendererPos(1f, 2.5f, 0.3f);
                 }
             }
 
