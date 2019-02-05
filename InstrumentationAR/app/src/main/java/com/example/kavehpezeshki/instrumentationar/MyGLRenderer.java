@@ -14,6 +14,7 @@ import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
 import java.lang.Math;
+import java.util.Arrays;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -47,6 +48,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     //private final float VERTICAL_SCALE_FACTOR = 4.7f;
     private final float HORIZONTAL_SCALE_FACTOR = 1f;
     private final float VERTICAL_SCALE_FACTOR = 1f;
+    private final float PITCH_OFFSET = 0f;
+    private final float YAW_OFFSET = 0f;
+    private final float ROLL_OFFSET = 0f;
 
     // Context object so that we can access sensor data in the renderer class
     Context mContext;
@@ -63,9 +67,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     private float[] yawVectors   = new float[numVectorsForFIR];
 
     //GPS distances
-    private float longDist = 1f; //north-south  currently north-south, correct
-    private float latDist = 2.5f; //east-west     currently up-down, fixed and now correct
-    private float altDist = 0.3f; //up-down      currently east-west, fixed and now correct
+    private float longDist = 0f; //north-south  currently north-south, correct
+    private float latDist = 0f; //east-west     currently up-down, fixed and now correct
+    private float altDist = 0f; //up-down      currently east-west, fixed and now correct
 
 
     public MyGLRenderer(Context context) {
@@ -122,7 +126,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
         mTriangle.draw(scratch);
-        Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
+        //Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
 
     }
 
@@ -190,11 +194,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             pitch = orientationVector[1];
             yaw = orientationVector[0];
             roll = orientationVector[2];
-            Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
+            //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
+            //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             // https://learnopengl.com/Getting-started/Camera
+            //TODO: the double-rendering error is here. cos(-x) = cos(x).
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
+            Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
             // set camera position
             Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
                     -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);

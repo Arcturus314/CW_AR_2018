@@ -45,6 +45,8 @@ public class OpenGLActivity extends Activity{
         //setting the mSurfaceView renderer to the instantiated mRenderer object
         mSurfaceView.start(mRenderer);
         setContentView(mSurfaceView);
+        //mSurfaceView.setRendererPos(0,0,0);
+
 
         //----------------------------
         //      LOCATION TASKS
@@ -76,7 +78,9 @@ public class OpenGLActivity extends Activity{
                     final float altDist = Math.abs((float) userCurr.getDistAlt(tree.getAltitude())/100);
                     final float longDist = Math.abs((float) userCurr.getDistLon(tree.getLongitude())/100);
                     final float latDist = Math.abs((float) userCurr.getDistLat(tree.getLatitude())/100);
-                    mRenderer.setPos(1f, 2.5f, 0.3f);
+                    Log.i("GPS Setup Status: ", "Calculated GPS values (long, lat, alt): " + longDist + " " + latDist + " " + altDist);
+                    //mRenderer.setPos(.004f, 0.67f, 0f);
+                    mSurfaceView.setRendererPos(.004f, 0.67f, 0f);
                     //mSurfaceView.setRendererPosSingleThread(1f, 2.5f, 0.3f);
                     //mSurfaceView.setRendererPosSingleThread(latDist, longDist, altDist);
                     //mSurfaceView.setRendererPos(latDist, longDist, altDist);
