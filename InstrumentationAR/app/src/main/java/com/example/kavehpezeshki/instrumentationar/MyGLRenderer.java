@@ -228,17 +228,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         return shader;
     }
-    /*
-     * Taken from: https://stackoverflow.com/questions/30279065/how-to-get-the-euler-angles-from-the-rotation-vector-sensor-type-rotation-vecto
-     */
-    float[] quaternionToEuler(float[] q) {
-        float psi = (float) Math.atan2( -2.*(q[2]*q[3] - q[0]*q[1]) , q[0]*q[0] - q[1]*q[1]- q[2]*q[2] + q[3]*q[3]);
-        float theta = (float) Math.asin( 2.*(q[1]*q[3] + q[0]*q[2]));
-        float phi = (float) Math.atan2( 2.*(-q[1]*q[2] + q[0]*q[3]) , q[0]*q[0] + q[1]*q[1] - q[2]*q[2] - q[3]*q[3]);
-        float [] eulerAngles = {psi, theta, phi};
-        return eulerAngles;
-    }
-
+    
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
