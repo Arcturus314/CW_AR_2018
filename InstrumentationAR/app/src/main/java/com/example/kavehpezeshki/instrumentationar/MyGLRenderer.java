@@ -194,14 +194,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             pitch = orientationVector[1];
             yaw = orientationVector[0];
             roll = orientationVector[2];
-            //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
+            Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
             //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             // https://learnopengl.com/Getting-started/Camera
             //TODO: the double-rendering error is here. cos(-x) = cos(x).
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
-            Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
+            //Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
             // set camera position
             Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
                     -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
