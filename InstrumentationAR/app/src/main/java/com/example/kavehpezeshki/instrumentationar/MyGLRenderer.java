@@ -120,7 +120,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
         Matrix.setIdentityM(mTranslateM, 0);
-        Matrix.translateM(mTranslateM, 0, longDist, altDist, latDist);
+        // positive x is towards north, negative x is towards south
+        // positive y is towards sky, negative y is towards ground
+        // positive z is towards east, negative z is towards west
+        Matrix.translateM(mTranslateM, 0, 0, 0, 5);
+        //Matrix.translateM(mTranslateM, 0, longDist, altDist, latDist);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
@@ -184,7 +188,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // rotation-vector, which is what we want.
             //float distance = 5f; TODO: fix this
             float distance = (float) Math.sqrt(gpsCoords[0]*gpsCoords[0] + gpsCoords[1]*gpsCoords[1] + gpsCoords[2]*gpsCoords[2]);
-            https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
+            // https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);
             // orientationVector[0] = YAW north = 0, south = pi, east = pi/2, west = -pi/2
@@ -201,9 +205,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
-            Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
+            // Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
+            // Log.i("distance: ", distance + "");
             // set camera position
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
                     -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
         }
     }
@@ -228,7 +233,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         return shader;
     }
-    
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
