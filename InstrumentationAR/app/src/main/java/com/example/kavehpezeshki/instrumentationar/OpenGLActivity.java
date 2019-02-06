@@ -80,7 +80,7 @@ public class OpenGLActivity extends Activity{
                     final float latDist = Math.abs((float) userCurr.getDistLat(tree.getLatitude())/100);
                     Log.i("GPS Setup Status: ", "Calculated GPS values (long, lat, alt): " + longDist + " " + latDist + " " + altDist);
                     //mRenderer.setPos(.004f, 0.67f, 0f);
-                    mSurfaceView.setRendererPos(.004f, 0.67f, 0f);
+                    //mSurfaceView.setRendererPos(.004f, 0.67f, 0f);
                     //mSurfaceView.setRendererPosSingleThread(1f, 2.5f, 0.3f);
                     //mSurfaceView.setRendererPosSingleThread(latDist, longDist, altDist);
                     //mSurfaceView.setRendererPos(latDist, longDist, altDist);

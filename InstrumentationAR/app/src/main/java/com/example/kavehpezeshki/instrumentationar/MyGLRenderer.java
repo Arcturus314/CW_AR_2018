@@ -46,8 +46,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // determined experimentally to create nice FOV
     //private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
     //private final float VERTICAL_SCALE_FACTOR = 4.7f;
-    private final float HORIZONTAL_SCALE_FACTOR = 1f;
-    private final float VERTICAL_SCALE_FACTOR = 1f;
+    private final float HORIZONTAL_SCALE_FACTOR = .2f;
+    private final float VERTICAL_SCALE_FACTOR = .2f;
     private final float PITCH_OFFSET = 0f;
     private final float YAW_OFFSET = 0f;
     private final float ROLL_OFFSET = 0f;
@@ -68,7 +68,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     //GPS distances
     private float longDist = 0f; //north-south  currently north-south, correct
-    private float latDist = 0f; //east-west     currently up-down, fixed and now correct
+    private float latDist = 40f; //east-west     currently up-down, fixed and now correct
     private float altDist = 0f; //up-down      currently east-west, fixed and now correct
 
 
@@ -123,8 +123,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         // positive x is towards north, negative x is towards south
         // positive y is towards sky, negative y is towards ground
         // positive z is towards east, negative z is towards west
-        Matrix.translateM(mTranslateM, 0, 0, 0, 5);
-        //Matrix.translateM(mTranslateM, 0, longDist, altDist, latDist);
+        //Matrix.translateM(mTranslateM, 0, 0, 0, 0);
+        Matrix.translateM(mTranslateM, 0, longDist, altDist, latDist);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
@@ -187,7 +187,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
             //float distance = 5f; TODO: fix this
-            float distance = (float) Math.sqrt(gpsCoords[0]*gpsCoords[0] + gpsCoords[1]*gpsCoords[1] + gpsCoords[2]*gpsCoords[2]);
+            float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
             // https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);
@@ -207,7 +207,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
 
             // Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
-            // Log.i("distance: ", distance + "");
+            Log.i("distance: ", distance + "");
             // set camera position
             Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
                     -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
@@ -221,7 +221,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // this projection matrix is applied to object coordinates in the onDrawFrame() method
         // this code populates a projection matrix to only render objects in the given frustrum
-        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 50);
+        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 500);
         // Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
 
