@@ -198,13 +198,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             pitch = orientationVector[1];
             yaw = orientationVector[0];
             roll = orientationVector[2];
-            //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
+            Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
             //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             // https://learnopengl.com/Getting-started/Camera
             //TODO: the double-rendering error is here. cos(-x) = cos(x).
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
+
             // Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
             // Log.i("distance: ", distance + "");
             // set camera position
@@ -221,7 +222,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         // this projection matrix is applied to object coordinates in the onDrawFrame() method
         // this code populates a projection matrix to only render objects in the given frustrum
         Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 50);
-//        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+        // Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
 
     public static int loadShader(int type, String shaderCode) {
