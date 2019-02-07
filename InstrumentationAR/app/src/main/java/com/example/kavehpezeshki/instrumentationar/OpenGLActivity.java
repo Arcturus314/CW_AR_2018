@@ -75,15 +75,16 @@ public class OpenGLActivity extends Activity{
                     userCurr.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
                     //TODO: this experimental code needs to be returned to normal
                     Log.i("GPS Setup Status: ", "Setting Single Thread GPS Position (raw) to: " + location.getLongitude() + " " + location.getLatitude() + " " + location.getAltitude());
-                    final float altDist = Math.abs((float) userCurr.getDistAlt(tree.getAltitude())/100);
-                    final float longDist = Math.abs((float) userCurr.getDistLon(tree.getLongitude())/100);
-                    final float latDist = Math.abs((float) userCurr.getDistLat(tree.getLatitude())/100);
+                    final float altDist = (float) userCurr.getDistAlt(tree.getAltitude())/10;
+                    final float longDist = (float) userCurr.getDistLon(tree.getLongitude())/10;
+                    final float latDist = (float) userCurr.getDistLat(tree.getLatitude())/10;
                     Log.i("GPS Setup Status: ", "Calculated GPS values (long, lat, alt): " + longDist + " " + latDist + " " + altDist);
                     //mRenderer.setPos(.004f, 0.67f, 0f);
-                    //mSurfaceView.setRendererPos(.004f, 0.67f, 0f);
+                    //mSurfaceView.setRendererPos(20f, 0f, 0f);
                     //mSurfaceView.setRendererPosSingleThread(1f, 2.5f, 0.3f);
                     //mSurfaceView.setRendererPosSingleThread(latDist, longDist, altDist);
                     //mSurfaceView.setRendererPos(latDist, longDist, altDist);
+                    mSurfaceView.setRendererPos(latDist, longDist, 0);
 
                    // mSurfaceView.setRendererPos(1f, 2.5f, 0.3f);
                 }

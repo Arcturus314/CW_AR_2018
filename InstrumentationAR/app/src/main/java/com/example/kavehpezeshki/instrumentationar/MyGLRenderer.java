@@ -55,11 +55,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // Context object so that we can access sensor data in the renderer class
     Context mContext;
 
-    // gps coordinates of user
-    // these live in the renderer class for now, but we can elaborate a better heirarchy later
-    private float[] gpsCoords = new float[3];
-
-
     //last set of n coordinates to average (FIR filter)
     private int numVectorsForFIR = 10;
     private float[] rollVectors  = new float[numVectorsForFIR];
@@ -100,12 +95,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         lookAtVector[0] = 0f;
         lookAtVector[1] = 0f;
         lookAtVector[2] = 0f;
-        // assign default viewer position
-        // will get updated based on GPS locations
-        gpsCoords[0] = 0f;
-        gpsCoords[1] = 0f;
-        gpsCoords[2] = 1f;
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -5, lookAtVector[0], lookAtVector[1], lookAtVector[2], 0f, 1.0f, 0f);
+        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, lookAtVector[0], lookAtVector[1], lookAtVector[2], 0f, 1.0f, 0f);
     }
 
     public void onDrawFrame(GL10 unused) {
@@ -120,11 +110,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
         Matrix.setIdentityM(mTranslateM, 0);
-        // positive x is towards north, negative x is towards south
+        // positive x is towards north, negative x is towards south (update- pos x towards East, neg x towards West)
         // positive y is towards sky, negative y is towards ground
-        // positive z is towards east, negative z is towards west
+        // positive z is towards east, negative z is towards west (update- pos z towards South, neg z towards North) update 2: ?????? but updated comment
+        //TODO: ????????
         //Matrix.translateM(mTranslateM, 0, 0, 0, 0);
-        Matrix.translateM(mTranslateM, 0, longDist, altDist, latDist);
+        Matrix.translateM(mTranslateM, 0, latDist, altDist, -1*longDist);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
@@ -198,7 +189,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             pitch = orientationVector[1];
             yaw = orientationVector[0];
             roll = orientationVector[2];
-            Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
+            //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
             //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             // https://learnopengl.com/Getting-started/Camera
             //TODO: the double-rendering error is here. cos(-x) = cos(x).
@@ -207,7 +198,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
 
             // Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
-            Log.i("distance: ", distance + "");
+            //Log.i("distance: ", distance + "");
             // set camera position
             Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
                     -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
