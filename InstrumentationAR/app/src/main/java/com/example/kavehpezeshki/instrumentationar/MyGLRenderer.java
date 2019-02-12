@@ -37,7 +37,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // translate triangle by gpsCoords - triangle.gpsCoords
     // we do this to keep the camera at the centre of the scene
     private float[] mTranslateM = new float[16];
-
+    float[] mRotationMatrix = new float[16];
     // vector to store x, y, z, coordinates of where the camera should look
     // determined by sensors
     private float[] lookAtVector = new float[3];
@@ -46,8 +46,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // determined experimentally to create nice FOV
     //private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
     //private final float VERTICAL_SCALE_FACTOR = 4.7f;
-    private final float HORIZONTAL_SCALE_FACTOR = .2f;
-    private final float VERTICAL_SCALE_FACTOR = .2f;
+    private final float HORIZONTAL_SCALE_FACTOR = 2.3f;
+    private final float VERTICAL_SCALE_FACTOR = 2f;
     private final float PITCH_OFFSET = 0f;
     private final float YAW_OFFSET = 0f;
     private final float ROLL_OFFSET = 0f;
@@ -103,23 +103,34 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         //Log.i("GPS Setup Status: ", "setPos: Rendering");
         long time = SystemClock.uptimeMillis() % 4000L;
         float angle = 0.090f * ((int) time);
-        float[] mRotationMatrix = new float[16];
         float[] scratch = new float[16];
-        //Matrix.setRotateM(mRotationMatrix, 0, angle, 0, 0, -1.0f);
+        float[] transformationMatrix = new float[16];
         // redraw background colour
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
         Matrix.setIdentityM(mTranslateM, 0);
-        // positive x is towards north, negative x is towards south (update- pos x towards East, neg x towards West)
-        // positive y is towards sky, negative y is towards ground
-        // positive z is towards east, negative z is towards west (update- pos z towards South, neg z towards North) update 2: ?????? but updated comment
-        //TODO: ????????
-        //Matrix.translateM(mTranslateM, 0, 0, 0, 0);
-        Matrix.translateM(mTranslateM, 0, latDist, altDist, -1*longDist);
+        /**
+         * The coordinate system below works for the phone
+         * positive x is towards north, negative x is towards south (update- pos x towards East, neg x towards West)
+         * positive y is towards sky, negative y is towards ground
+         * positive z is towards east, negative z is towards west (update- pos z towards South, neg z towards North) update 2: ?????? but updated comment
+         */
+
+        //Matrix.translateM(mTranslateM, 0, latDist, altDist, -1*longDist);
+
+        /**
+         * This coordinate system works for the glasses
+         * positive x is towards north, negative x is towards south
+         * positive y is towards sky, negative y is towards ground
+         * positive z is towards east, negative z is towards west
+         */
+        Matrix.translateM(mTranslateM, 0, -longDist, altDist, latDist);
+        Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
+
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
+        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, transformationMatrix, 0);
         mTriangle.draw(scratch);
         //Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
 
@@ -177,7 +188,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // convert the rotation-vector to a 4x4 matrix. the matrix
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
-            //float distance = 5f; TODO: fix this
             float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
             // https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
@@ -190,9 +200,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             yaw = orientationVector[0];
             roll = orientationVector[2];
             //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
-            //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
+            Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             // https://learnopengl.com/Getting-started/Camera
-            //TODO: the double-rendering error is here. cos(-x) = cos(x).
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
@@ -202,6 +211,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // set camera position
             Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
                     -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+            Matrix.setRotateM(mRotationMatrix, 0, -roll, 0, 0, 1f);
         }
     }
 

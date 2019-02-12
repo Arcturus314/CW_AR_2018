@@ -52,7 +52,7 @@ public class OpenGLActivity extends Activity{
         //      LOCATION TASKS
         //----------------------------
 
-        tree = new TrackObject(-117.7076, 34.1056, 16 + 369); //base of tree is 369 meters off the ground
+        tree = new TrackObject(117.708793, 34.105872, 16 + 369); //base of tree is 369 meters off the ground
         //and a reference to the tree switch
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {

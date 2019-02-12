@@ -14,13 +14,13 @@ public class Triangle {
     static final int COORDS_PER_VERTEX = 3;
     //TODO: Distance Scaling. How do we implement this?
     static float triangleCoords[] = {
-            0.0f, .5f, 0.0f,    // top
-            -.3f, 0f, 0.0f,  // bottom left
-            .3f, 0f, 0.0f   // bottom right
+            0.0f, 0.9f, 0.0f,    // top
+            -.6f, 0f, 0.0f,  // bottom left
+            .6f, 0f, 0.0f   // bottom right
     };
 
     // define colour: r, g, b, opacity
-    float colour[] = {0.63f, 0.456f, 0.222f, 1.0f};
+    float colour[] = {1f, 0f, 0f, 1.0f};
 
     // define simple vertex and fragment shaders
     // this is all boilerplate taken from a rendering tutorial
