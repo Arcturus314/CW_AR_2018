@@ -14,7 +14,7 @@ public class Triangle {
     static final int COORDS_PER_VERTEX = 3;
     //TODO: Distance Scaling. How do we implement this?
     static float triangleCoords[] = {
-            0.0f, 0.9f, 0.0f,    // top
+            0.0f, 2f, 0.0f,    // top
             -.6f, 0f, 0.0f,  // bottom left
             .6f, 0f, 0.0f   // bottom right
     };

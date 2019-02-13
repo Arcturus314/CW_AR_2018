@@ -52,7 +52,7 @@ public class OpenGLActivity extends Activity{
         //      LOCATION TASKS
         //----------------------------
 
-        tree = new TrackObject(117.708793, 34.105872, 16 + 369); //base of tree is 369 meters off the ground
+        tree = new TrackObject(-117.707563, 34.105585, 16 + 369); //base of tree is 369 meters off the ground
         //and a reference to the tree switch
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -72,7 +72,8 @@ public class OpenGLActivity extends Activity{
                 //otherwise update user location
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
-                    userCurr.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
+                    //userCurr.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
+                    userCurr.setPos(-117.705997, 34.105555, location.getAltitude());
                     //TODO: this experimental code needs to be returned to normal
                     Log.i("GPS Setup Status: ", "Setting Single Thread GPS Position (raw) to: " + location.getLongitude() + " " + location.getLatitude() + " " + location.getAltitude());
                     final float altDist = (float) userCurr.getDistAlt(tree.getAltitude())/10;

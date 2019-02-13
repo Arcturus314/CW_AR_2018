@@ -63,7 +63,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     //GPS distances
     private float longDist = 0f; //north-south  currently north-south, correct
-    private float latDist = 40f; //east-west     currently up-down, fixed and now correct
+    private float latDist = 0f; //east-west     currently up-down, fixed and now correct
     private float altDist = 0f; //up-down      currently east-west, fixed and now correct
 
 
@@ -124,7 +124,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
          * positive y is towards sky, negative y is towards ground
          * positive z is towards east, negative z is towards west
          */
-        Matrix.translateM(mTranslateM, 0, -longDist, altDist, latDist);
+        Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
         Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
 
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
@@ -196,19 +196,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // orientationVector[1] = PITCH sky = -pi/2, earth = pi/2 ish
             // orientationVector[2] = roll
             SensorManager.getOrientation(remappedRot, orientationVector);
-            /* code without FIR */
-
-            /*
             pitch = orientationVector[1];
             yaw = orientationVector[0];
-            roll = orientationVector[2];*/
-
-
-            pitch = calcNextFIR(orientationVector[1], pitchVectors);
-            yaw   = calcNextFIR(orientationVector[0], yawVectors);
-            roll  = calcNextFIR(orientationVector[2], rollVectors);
-
-
+            roll = orientationVector[2];
             //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
             Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             // https://learnopengl.com/Getting-started/Camera
