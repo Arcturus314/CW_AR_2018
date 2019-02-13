@@ -196,9 +196,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // orientationVector[1] = PITCH sky = -pi/2, earth = pi/2 ish
             // orientationVector[2] = roll
             SensorManager.getOrientation(remappedRot, orientationVector);
+            /* code without FIR */
+
+            /*
             pitch = orientationVector[1];
             yaw = orientationVector[0];
-            roll = orientationVector[2];
+            roll = orientationVector[2];*/
+
+
+            pitch = calcNextFIR(orientationVector[1], pitchVectors);
+            yaw   = calcNextFIR(orientationVector[0], yawVectors);
+            roll  = calcNextFIR(orientationVector[2], rollVectors);
+
+
             //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
             Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             // https://learnopengl.com/Getting-started/Camera
