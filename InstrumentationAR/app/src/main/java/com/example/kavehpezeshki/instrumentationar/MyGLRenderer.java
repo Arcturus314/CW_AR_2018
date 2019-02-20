@@ -124,7 +124,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
          * positive y is towards sky, negative y is towards ground
          * positive z is towards east, negative z is towards west
          */
-        Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
+        //Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
+        Matrix.translateM(mTranslateM, 0, 0, 0, -13);
         Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
 
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
@@ -188,7 +189,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // convert the rotation-vector to a 4x4 matrix. the matrix
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
-            float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
+            //float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
+            float distance = 12;
             // https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);
@@ -201,6 +203,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             roll = orientationVector[2];
             //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
             Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
+            //Log.i("distance from tree", "latDist: " + latDist + " longDist " + longDist + " altDist " + altDist);
             // https://learnopengl.com/Getting-started/Camera
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y

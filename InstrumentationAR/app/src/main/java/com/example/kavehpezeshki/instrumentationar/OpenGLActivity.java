@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.location.LocationManager;
 import android.location.LocationListener;
 
+
 public class OpenGLActivity extends Activity{
     private MyGLSurfaceView mSurfaceView;
     private MyGLRenderer  mRenderer;
@@ -34,6 +35,8 @@ public class OpenGLActivity extends Activity{
     public boolean userLocationSet = false;
 
     public final float requiredAccuracy = 20; //estimate must be 20m accurate to begin tracking
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     public void onCreate(Bundle savedInstanceState) {
         //restoring previous instance
@@ -52,7 +55,7 @@ public class OpenGLActivity extends Activity{
         //      LOCATION TASKS
         //----------------------------
 
-        tree = new TrackObject(-117.707563, 34.105585, 16 + 369); //base of tree is 369 meters off the ground
+        tree = new TrackObject(-117.711164, 34.106412, 16 + 369); //base of tree is 369 meters off the ground
         //and a reference to the tree switch
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -73,7 +76,7 @@ public class OpenGLActivity extends Activity{
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
                     //userCurr.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
-                    userCurr.setPos(-117.705997, 34.105555, location.getAltitude());
+                    userCurr.setPos(-117.709084, 34.105875, location.getAltitude());
                     //TODO: this experimental code needs to be returned to normal
                     Log.i("GPS Setup Status: ", "Setting Single Thread GPS Position (raw) to: " + location.getLongitude() + " " + location.getLatitude() + " " + location.getAltitude());
                     final float altDist = (float) userCurr.getDistAlt(tree.getAltitude())/10;
@@ -106,11 +109,16 @@ public class OpenGLActivity extends Activity{
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else {//should request the permission here
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
             }
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
     }
+
+
 
 }
