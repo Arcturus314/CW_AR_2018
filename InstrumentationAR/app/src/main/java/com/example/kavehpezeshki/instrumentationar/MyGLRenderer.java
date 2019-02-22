@@ -24,7 +24,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     public SensorManager manager;
     public Sensor rotationVectorSensor;
-    private Triangle mTriangle;
+    private Triangle [] mTriangles;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     // arrays that store graphics transformation matrices
@@ -61,10 +61,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     private float[] pitchVectors = new float[numVectorsForFIR];
     private float[] yawVectors   = new float[numVectorsForFIR];
 
-    //GPS distances
+    // GPS distances
     private float longDist = 0f; //north-south  currently north-south, correct
     private float latDist = 0f; //east-west     currently up-down, fixed and now correct
     private float altDist = 0f; //up-down      currently east-west, fixed and now correct
+
+    // test variables for multi object rendering
+
+    float [] objTranslate = {20f, 0f, 0f, 0f, 0f, 20f};
+
 
 
     public MyGLRenderer(Context context) {
@@ -91,7 +96,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         // Set the background frame colour
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // initialise a triangle
-        mTriangle = new Triangle();
+        mTriangles = new Triangle[2];
         lookAtVector[0] = 0f;
         lookAtVector[1] = 0f;
         lookAtVector[2] = 0f;
@@ -99,47 +104,53 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     }
 
     public void onDrawFrame(GL10 unused) {
-        // Create a rotation transformation for the triangle
         //Log.i("GPS Setup Status: ", "setPos: Rendering");
-        long time = SystemClock.uptimeMillis() % 4000L;
-        float angle = 0.090f * ((int) time);
         float[] scratch = new float[16];
         float[] transformationMatrix = new float[16];
         // redraw background colour
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        // calculate the projection, view, and model transformation
-        Matrix.setIdentityM(mTranslateM, 0);
-        /**
-         * The coordinate system below works for the phone
-         * positive x is towards north, negative x is towards south (update- pos x towards East, neg x towards West)
-         * positive y is towards sky, negative y is towards ground
-         * positive z is towards east, negative z is towards west (update- pos z towards South, neg z towards North) update 2: ?????? but updated comment
-         */
 
-        //Matrix.translateM(mTranslateM, 0, latDist, altDist, -1*longDist);
+        // render all objects
+        for (int i = 0; i < mTriangles.length; i++) {
+            Triangle mTriangle = mTriangles[i];
+            int indexOffset = 3 * i;
+            // calculate the projection, view, and model transformation
+            Matrix.setIdentityM(mTranslateM, 0);
+            /**
+             * The coordinate system below works for the phone
+             * positive x is towards north, negative x is towards south (update- pos x towards East, neg x towards West)
+             * positive y is towards sky, negative y is towards ground
+             * positive z is towards east, negative z is towards west (update- pos z towards South, neg z towards North) update 2: ?????? but updated comment
+             */
 
-        /**
-         * This coordinate system works for the glasses
-         * positive x is towards north, negative x is towards south
-         * positive y is towards sky, negative y is towards ground
-         * positive z is towards east, negative z is towards west
-         */
-        //Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
-        Matrix.translateM(mTranslateM, 0, 0, 0, -13);
-        Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
+            //Matrix.translateM(mTranslateM, 0, latDist, altDist, -1*longDist);
 
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-        //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
+            /**
+             * This coordinate system works for the glasses
+             * positive x is towards north, negative x is towards south
+             * positive y is towards sky, negative y is towards ground
+             * positive z is towards east, negative z is towards west
+             */
+            //Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
+            Matrix.translateM(mTranslateM, 0, objTranslate[indexOffset], objTranslate[indexOffset + 1], objTranslate[indexOffset + 2]);
+            //Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
+            float distance = 20;
+            Log.i("Drawing: ", "mViewMatrix: " + printArray(mViewMatrix));
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
+                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+            Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+            //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, transformationMatrix, 0);
-        mTriangle.draw(scratch);
-        //Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
+            Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
+            mTriangle.draw(scratch);
+            //Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
+        }
 
     }
 
-    public String print16ArrByElement(float[] input) {
+    public String printArray(float[] input) {
         String output = "";
-        for(int i = 0; i < 16; i++) {
+        for(int i = 0; i < input.length; i++) {
             output += input[i] + " ";
         }
         return output;
@@ -189,7 +200,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // convert the rotation-vector to a 4x4 matrix. the matrix
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
-            //float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
+            // float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
             float distance = 12;
             // https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
@@ -210,12 +221,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
 
             // Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
-            //Log.i("distance: ", distance + "");
+            // Log.i("distance: ", distance + "");
             // set camera position
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
-            Matrix.setRotateM(mRotationMatrix, 0, -roll, 0, 0, 1f);
+//            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
+//                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
         }
+    }
+
+    public float[] calculateLookAtM(float [] mViewMatrix, float distance) {
+        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
+                -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+        return mViewMatrix;
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
