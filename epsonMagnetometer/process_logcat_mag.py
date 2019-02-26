@@ -16,17 +16,18 @@ num_hist_bins = 100
 plot_update_interval = 1000
 
 num_magnetometer_samples = 0
-magnetometer_x = [0]
-magnetometer_y = [0]
-magnetometer_z = [0]
+magnetometer_x = []
+magnetometer_y = []
+magnetometer_z = []
 
 num_orientation_samples  = 0
-orientation_x = [0]
-orientation_y = [0]
-orientation_z = [0]
+orientation_x = []
+orientation_y = []
+orientation_z = []
 
 
 #setting up subplots
+plt.ion()
 fig = plt.figure()
 
 mag_x_hist_ax = fig.add_subplot(4,3,1)
@@ -64,16 +65,19 @@ or_z_scatter, = or_z_scatter.plot(orientation_z)
 
 for line in sys.stdin:
     # Updating data for magnetometer / orientation
-    if "magnetometer:" in line:
+    print("read line " + line)
+    if "magnetometer" in line:
+        print("read magnetometer: " + line)
         num_magnetometer_samples += 1
-        line_data = line.split(":")[1].split(",")
+        line_data = line.split(": ")[1].split(",")
         magnetometer_x.append(float(line_data[0]))
         magnetometer_y.append(float(line_data[1]))
         magnetometer_z.append(float(line_data[2]))
 
-    if "orientation:" in line:
+    if "orientation" in line:
+        print("read orientation: " + line)
         num_orientation_samples += 1
-        line_data = line.split(":")[1].split(",")
+        line_data = line.split(": ")[1].split(",")
         orientation_x.append(float(line_data[0]))
         orientation_y.append(float(line_data[1]))
         orientation_z.append(float(line_data[2]))
