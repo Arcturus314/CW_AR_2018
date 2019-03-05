@@ -30,7 +30,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // arrays that store graphics transformation matrices
     private float[] mMVPMatrix = new float[16];
     private float[] mProjectionMatrix = new float[16];
-    private float[] modelViewMatrix = new float[16];
     private float[] mViewMatrix = new float[16];
 
     // triangle translation matrix
@@ -68,7 +67,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     // test variables for multi object rendering
 
-    float [] objTranslate = {20f, 0f, 0f, 20f, 0f, 5f};
+    float [] objTranslate = {50f, 0f, 0f, 0f, 0f, 20f};
 
 
 
@@ -96,7 +95,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         // Set the background frame colour
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // initialise a triangle
-        mTriangles = new Triangle[1];
+        mTriangles = new Triangle[2];
         for (int i = 0; i < mTriangles.length; i++) {
             mTriangles[i] = new Triangle();
         }
@@ -137,10 +136,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             //Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
             Matrix.translateM(mTranslateM, 0, objTranslate[indexOffset], objTranslate[indexOffset + 1], objTranslate[indexOffset + 2]);
             //Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
-            float distance = 20;
-//            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-//                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
-            calculateLookAtM(mViewMatrix, distance);
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, lookAtVector[0],
+                    -lookAtVector[1], lookAtVector[2], 0, 1.0f, 0f);
             Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
             Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
@@ -202,8 +199,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // convert the rotation-vector to a 4x4 matrix. the matrix
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
-            // float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
-            float distance = 12;
             // https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);
@@ -222,18 +217,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
 
-            Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
-            // Log.i("distance: ", distance + "");
-            // set camera position
-//            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-//                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+            //Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
         }
-    }
-
-    public float[] calculateLookAtM(float [] mViewMatrix, float distance) {
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-                -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
-        return mViewMatrix;
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
