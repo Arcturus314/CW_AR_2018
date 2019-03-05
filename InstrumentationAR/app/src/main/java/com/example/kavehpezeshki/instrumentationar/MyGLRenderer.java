@@ -46,8 +46,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // determined experimentally to create nice FOV
     //private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
     //private final float VERTICAL_SCALE_FACTOR = 4.7f;
-    private final float HORIZONTAL_SCALE_FACTOR = 2.3f;
-    private final float VERTICAL_SCALE_FACTOR = 2f;
+    private final float HORIZONTAL_SCALE_FACTOR = 1f;
+    private final float VERTICAL_SCALE_FACTOR = 1f;
     private final float PITCH_OFFSET = 0f;
     private final float YAW_OFFSET = 0f;
     private final float ROLL_OFFSET = 0f;
@@ -125,7 +125,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
          * positive z is towards east, negative z is towards west
          */
         //Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
-        Matrix.translateM(mTranslateM, 0, 0, 0, -13);
+        Matrix.translateM(mTranslateM, 0, 20, 0, 0);
         Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
 
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
@@ -190,7 +190,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // is interpreted by Open GL as the inverse of the
             // rotation-vector, which is what we want.
             //float distance = (float) Math.sqrt(latDist*latDist+ longDist*longDist + altDist*altDist);
-            float distance = 12;
+            float distance = 20;
             // https://stackoverflow.com/questions/20564735/remapping-coordinate-system-in-android-app
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Z, remappedRot);
@@ -212,8 +212,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             // Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
             //Log.i("distance: ", distance + "");
             // set camera position
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, lookAtVector[0],
+                    -lookAtVector[1], lookAtVector[2], 0, 1.0f, 0f);
             Matrix.setRotateM(mRotationMatrix, 0, -roll, 0, 0, 1f);
         }
     }
