@@ -46,8 +46,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // determined experimentally to create nice FOV
     //private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
     //private final float VERTICAL_SCALE_FACTOR = 4.7f;
-    private final float HORIZONTAL_SCALE_FACTOR = 2.3f;
-    private final float VERTICAL_SCALE_FACTOR = 2f;
+    private final float HORIZONTAL_SCALE_FACTOR = 5f;
+    private final float VERTICAL_SCALE_FACTOR = 5f;
     private final float PITCH_OFFSET = 0f;
     private final float YAW_OFFSET = 0f;
     private final float ROLL_OFFSET = 0f;
@@ -68,7 +68,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     // test variables for multi object rendering
 
-    float [] objTranslate = {20f, 0f, 0f, 0f, 0f, 20f};
+    float [] objTranslate = {20f, 0f, 0f, 20f, 0f, 5f};
 
 
 
@@ -96,7 +96,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         // Set the background frame colour
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // initialise a triangle
-        mTriangles = new Triangle[2];
+        mTriangles = new Triangle[1];
+        for (int i = 0; i < mTriangles.length; i++) {
+            mTriangles[i] = new Triangle();
+        }
         lookAtVector[0] = 0f;
         lookAtVector[1] = 0f;
         lookAtVector[2] = 0f;
@@ -135,11 +138,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             Matrix.translateM(mTranslateM, 0, objTranslate[indexOffset], objTranslate[indexOffset + 1], objTranslate[indexOffset + 2]);
             //Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
             float distance = 20;
-            Log.i("Drawing: ", "mViewMatrix: " + printArray(mViewMatrix));
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
-                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+//            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
+//                    -VERTICAL_SCALE_FACTOR*distance*lookAtVector[1], distance*lookAtVector[2], 0, 1.0f, 0f);
+            calculateLookAtM(mViewMatrix, distance);
             Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-            //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
             Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
             mTriangle.draw(scratch);
@@ -213,14 +215,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             yaw = orientationVector[0];
             roll = orientationVector[2];
             //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
-            Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
+            //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             //Log.i("distance from tree", "latDist: " + latDist + " longDist " + longDist + " altDist " + altDist);
             // https://learnopengl.com/Getting-started/Camera
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
             lookAtVector[1] = (float) Math.sin(pitch); // lookAt Y
             lookAtVector[2] = (float) ( Math.cos(pitch) * Math.sin(yaw) ); // lookAtZ
 
-            // Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
+            Log.i("Sensor TOT Data ", Arrays.toString(lookAtVector) + Arrays.toString(orientationVector));
             // Log.i("distance: ", distance + "");
             // set camera position
 //            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 0, HORIZONTAL_SCALE_FACTOR*distance*lookAtVector[0],
