@@ -8,6 +8,8 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.kavehpezeshki.instrumentationar.GetPage;
+
 //imports related to GPS
 import android.Manifest;
 import android.content.Context;
@@ -15,10 +17,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.location.LocationManager;
 import android.location.LocationListener;
+
+import java.util.Arrays;
 
 
 public class OpenGLActivity extends Activity{
@@ -55,7 +57,7 @@ public class OpenGLActivity extends Activity{
         //      LOCATION TASKS
         //----------------------------
 
-        tree = new TrackObject(-117.711164, 34.106412, 16 + 369); //base of tree is 369 meters off the ground
+//        tree = new TrackObject(-117.711164, 34.106412, 16 + 369); //base of tree is 369 meters off the ground
         //and a reference to the tree switch
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -76,21 +78,44 @@ public class OpenGLActivity extends Activity{
                 else {
                     //in the case that the position has already been set, we update position of the User object and find new x,y,z position change
                     //userCurr.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
-                    userCurr.setPos(-117.709084, 34.105875, location.getAltitude());
+                    userCurr.setPos(location.getLongitude(), location.getLatitude(), location.getAltitude());
                     //TODO: this experimental code needs to be returned to normal
                     Log.i("GPS Setup Status: ", "Setting Single Thread GPS Position (raw) to: " + location.getLongitude() + " " + location.getLatitude() + " " + location.getAltitude());
-                    final float altDist = (float) userCurr.getDistAlt(tree.getAltitude())/10;
-                    final float longDist = (float) userCurr.getDistLon(tree.getLongitude())/10;
-                    final float latDist = (float) userCurr.getDistLat(tree.getLatitude())/10;
-                    Log.i("GPS Setup Status: ", "Calculated GPS values (long, lat, alt): " + longDist + " " + latDist + " " + altDist);
-                    //mRenderer.setPos(.004f, 0.67f, 0f);
-                    //mSurfaceView.setRendererPos(20f, 0f, 0f);
-                    //mSurfaceView.setRendererPosSingleThread(1f, 2.5f, 0.3f);
-                    //mSurfaceView.setRendererPosSingleThread(latDist, longDist, altDist);
-                    //mSurfaceView.setRendererPos(latDist, longDist, altDist);
-                    mSurfaceView.setRendererPos(latDist, longDist, 0);
+                    //final float altDist = (float) userCurr.getDistAlt(tree.getAltitude())/10;
+                    //final float longDist = (float) userCurr.getDistLon(tree.getLongitude())/10;
+                    //final float latDist = (float) userCurr.getDistLat(tree.getLatitude())/10;
+                    //Log.i("GPS Setup Status: ", "Calculated GPS values (long, lat, alt): " + longDist + " " + latDist + " " + altDist);
+                    GetPage flightDataParser = new GetPage();
+                    // change this to use actual flight data
+                    /*
+                        Given a String representation of a flights webpage given in standard form, returns a String representation of the webpage formatted as follows:
+                        [
+                            [Flight, Alt, Speed, Heading, Lat, Long, Sig, Msgs],
+                            [Flight, Alt, Speed, Heading, Lat, Long, Sig, Msgs],
+                            ...
+                        ]
+                    */
+                    //String [][] flightData = {{"tree", "385", "very slow", "idk", "34.105605", "-117.707557", "garbage", "pls work"}};
+                    try {
+                        String [][] flightData = flightDataParser.getFlights(flightDataParser.getWebPage(GetPage.flightDataUrl));
+                        float [][] flightDists = new float [flightData.length][3];
+                        for (int i = 0; i < flightData.length; i++) {
+                            float lat = Float.parseFloat(flightData[i][4]);
+                            float lon = Float.parseFloat(flightData[i][5]);
+                            float alt = Float.parseFloat(flightData[i][1]);
+                            TrackObject thisFlight = new TrackObject(lon, lat, alt);
+                            flightDists[i][0] = (float) userCurr.getDistLat(thisFlight.getLatitude());
+                            flightDists[i][1] = (float) userCurr.getDistLon(thisFlight.getLongitude());
+                            flightDists[i][2] = (float) userCurr.getDistAlt(thisFlight.getAltitude());
+                        }
+                        Log.i("Flight dists:", Arrays.deepToString(flightDists));
+                        mSurfaceView.passDistances(flightDists);
+                    } catch (Exception e) {
+                        Log.i("Exception flight data: ", e.toString());
+                    }
 
-                   // mSurfaceView.setRendererPos(1f, 2.5f, 0.3f);
+
+
                 }
             }
 

@@ -33,6 +33,10 @@ public class MyGLSurfaceView extends GLSurfaceView {
         });
     }
 
+    public void passDistances(float[][] distances) {
+        mRenderer.flightDists = distances;
+    }
+
     //equivalent to above implementation, but accesses instance variables directly. I'm not sure if this will work.
     public void setRendererPosSingleThread(float latDist, float longDist, float altDist) {
         this.latDist = latDist;
