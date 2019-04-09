@@ -16,7 +16,7 @@ public class GetPage {
     public static String getWebPage(String urlToRead) throws Exception {
         String textFromWebpage = "";
 
-        System.out.println("starting download from url " + urlToRead);
+        //System.out.println("starting download from url " + urlToRead);
         URL url = new URL(urlToRead);
 
         BufferedReader s = new BufferedReader(
@@ -46,13 +46,12 @@ A5C6A1  S     7322  UPS966    9575  294  308   34.113 -117.835    6   391    1
 
     public static String[][] getFlights(String webPage) {
         String[] lines = webPage.split("\n");
-        Log.i( "webpage lines", Arrays.toString(lines));
         String[][] planeData = new String[lines.length - 2][8];
         //ignoring the first and second lines, creating a new string array for every line after the two headers
         //TODO: rewrite after we have a better idea of string parsing limits. Don't want to miss a digit if fields have different sizes than expected
-        System.out.println("lines");
+        //System.out.println("lines");
         for (int i = 2; i < lines.length; i++) {
-            System.out.println(lines[i]);
+            //System.out.println(lines[i]);
             String[] lineData = new String[8];
             lineData[0] = lines[i].substring(21, 27);
             lineData[1] = lines[i].substring(27, 35);
@@ -66,9 +65,9 @@ A5C6A1  S     7322  UPS966    9575  294  308   34.113 -117.835    6   391    1
             //now strip spaces from each string
             for (int j = 0; j < lineData.length; j++) {
                 lineData[j] = lineData[j].replaceAll(" ", "");
-                System.out.print("line " + j + " |" + lineData[j] + "| ");
+                //System.out.print("line " + j + " |" + lineData[j] + "| ");
             }
-            System.out.println();
+            //System.out.println();
 
             planeData[i - 2] = lineData;
         }
