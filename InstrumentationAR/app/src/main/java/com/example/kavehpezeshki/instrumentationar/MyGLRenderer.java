@@ -189,6 +189,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     float maxRoll  = 0;
     float minRoll  = 400;
 
+    boolean calibrated = false;
+    float pitchOffset = 0f;
+    float rollOffset = 0f;
+    float yawOffset = 0f;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         // we received a sensor event. it is a good practice to check
@@ -213,6 +218,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             pitch = orientationVector[1];
             yaw = orientationVector[0];
             roll = orientationVector[2];
+            if (calibrated == false) {
+                calibrated = true;
+                pitchOffset = pitch;
+                yawOffset = yaw;
+                rollOffset = roll;
+            }
+            pitch -= pitchOffset;
+            yaw -= yawOffset;
+            roll -= rollOffset;
             //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
             //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             //Log.i("distance from tree", "latDist: " + latDist + " longDist " + longDist + " altDist " + altDist);
