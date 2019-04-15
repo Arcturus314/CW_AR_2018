@@ -104,20 +104,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // create triangles for every flight
         if (flightDists != null) {
+            //Log.i("Flight Dists: ", Arrays.deepToString(flightDists));
+            flightDrawings = new Triangle[flightDists.length];
             for (int i = 0; i < flightDists.length; i++) {
-                Triangle flight;
-                flight = new Triangle();
+                flightDrawings[i] = new Triangle();
+            }
+            for (int i = 0; i < flightDists.length; i++) {
+                Triangle flight = flightDrawings[i];
+                //Log.i("flight: ", " " + flight);
                 float lat = flightDists[i][0];
                 float lon = flightDists[i][1];
                 float alt = flightDists[i][2];
-
+                Matrix.setIdentityM(mTranslateM, 0);
                 Matrix.translateM(mTranslateM, 0, lat, alt, -lon);
-                //Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
 
                 Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-                //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
 
                 Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
+                //Log.i("Drawing flight: ", lat + " " + lon + " " + alt + " ");
                 flight.draw(scratch);
             }
         }
