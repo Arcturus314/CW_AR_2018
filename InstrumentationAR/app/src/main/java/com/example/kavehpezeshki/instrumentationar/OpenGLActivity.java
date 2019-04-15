@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.location.LocationManager;
 import android.location.LocationListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -106,15 +107,15 @@ public class OpenGLActivity extends Activity{
                         @Override
                         public void run() {
                             try {
-                                String[][] flightData = GetPage.getFlights(GetPage.getWebPage(GetPage.flightDataUrl));
+                                ArrayList<String []> flightData = GetPage.getFlights(GetPage.getWebPage(GetPage.flightDataUrl));
                                 //String [][] flightData = {{"tree", "385", "very slow", "idk", "34.105605", "-117.707557", "garbage", "pls work"}};
                                 //Log.i("Flight data:", Arrays.deepToString(flightData));
-                                float[][] flightDists = new float[flightData.length + 1][3];
-                                for (int i = 0; i < flightData.length; i++) {
-                                    if (!flightData[i][1].isEmpty() && !flightData[i][4].isEmpty() && !flightData[i][5].isEmpty() && userLocationSet) {
-                                        float lat = Float.parseFloat(flightData[i][4]);
-                                        float lon = Float.parseFloat(flightData[i][5]);
-                                        float alt = Float.parseFloat(flightData[i][1]);
+                                float[][] flightDists = new float[flightData.size() + 1][3];
+                                for (int i = 0; i < flightData.size(); i++) {
+                                    if (!flightData.get(i)[1].isEmpty() && !flightData.get(i)[4].isEmpty() && !flightData.get(i)[5].isEmpty() && userLocationSet) {
+                                        float lat = Float.parseFloat(flightData.get(i)[4]);
+                                        float lon = Float.parseFloat(flightData.get(i)[5]);
+                                        float alt = Float.parseFloat(flightData.get(i)[1]);
                                         //Log.i("coords: :", " " + lat + " " + lon + " " + alt);
                                         if (!(lat == 0f && lon == 0 && alt == 0f)) {
                                             flightDists[i][0] = (float) userCurr.getDistLat(lat) / 500;
@@ -123,9 +124,9 @@ public class OpenGLActivity extends Activity{
                                         }
                                     }
                                 }
-                                flightDists[flightData.length][0] = (float) userCurr.getDistLat(TREE_LAT) / 10;
-                                flightDists[flightData.length][1] = (float) userCurr.getDistLon(TREE_LON) / 10;
-                                flightDists[flightData.length][2] = (float) userCurr.getDistAlt(TREE_ALT) / 10;
+                                flightDists[flightData.size()][0] = (float) userCurr.getDistLat(TREE_LAT);
+                                flightDists[flightData.size()][1] = (float) userCurr.getDistLon(TREE_LON);
+                                flightDists[flightData.size()][2] = (float) userCurr.getDistAlt(TREE_ALT);
                                 mSurfaceView.passDistances(flightDists);
                                 Log.i("Flight dists:", Arrays.deepToString(flightDists));
                             } catch (Exception e) {

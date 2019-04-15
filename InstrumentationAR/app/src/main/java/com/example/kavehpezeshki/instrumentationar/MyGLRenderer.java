@@ -60,6 +60,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
     private Triangle[] flightDrawings;
 
+    boolean drawing = false;
+
     public MyGLRenderer(Context context) {
         mContext = context;
     }
@@ -104,6 +106,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // create triangles for every flight
         if (flightDists != null) {
+            drawing = true;
             //Log.i("Flight Dists: ", Arrays.deepToString(flightDists));
             flightDrawings = new Triangle[flightDists.length];
             for (int i = 0; i < flightDists.length; i++) {
@@ -122,8 +125,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
                 Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
                 //Log.i("Drawing flight: ", lat + " " + lon + " " + alt + " ");
+                if (i == flightDists.length - 1) {
+                    flight.setColour(0f, 255f, 0f, 1f);
+                }
                 flight.draw(scratch);
             }
+            drawing = false;
         }
 
         /**
@@ -139,10 +146,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
          * positive y is towards sky, negative y is towards ground
          * positive z is towards east, negative z is towards west
          */
-
-        //Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
-
-        //Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
 
     }
 
@@ -234,7 +237,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // this projection matrix is applied to object coordinates in the onDrawFrame() method
         // this code populates a projection matrix to only render objects in the given frustrum
-        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 500);
+        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 5000);
     }
 
     public static int loadShader(int type, String shaderCode) {
