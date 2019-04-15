@@ -9,51 +9,51 @@ import java.nio.FloatBuffer;
 public class Triangle {
 
     private FloatBuffer vertexBuffer;
-
+    private static float scaleFactor = 3f;
     // number of coordinates per vertex in buffer
     static final int COORDS_PER_VERTEX = 3;
     //TODO: Distance Scaling. How do we implement this?
     static float triangleCoords[] = {
-            -1.0f,-1.0f,-1.0f, // triangle 1 : begin
-            -1.0f,-1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f, // triangle 1 : end
-            1.0f, 1.0f,-1.0f, // triangle 2 : begin
-            -1.0f,-1.0f,-1.0f,
-            -1.0f, 1.0f,-1.0f, // triangle 2 : end
-            1.0f,-1.0f, 1.0f,
-            -1.0f,-1.0f,-1.0f,
-            1.0f,-1.0f,-1.0f,
-            1.0f, 1.0f,-1.0f,
-            1.0f,-1.0f,-1.0f,
-            -1.0f,-1.0f,-1.0f,
-            -1.0f,-1.0f,-1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f,-1.0f,
-            1.0f,-1.0f, 1.0f,
-            -1.0f,-1.0f, 1.0f,
-            -1.0f,-1.0f,-1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f,-1.0f, 1.0f,
-            1.0f,-1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f,-1.0f,-1.0f,
-            1.0f, 1.0f,-1.0f,
-            1.0f,-1.0f,-1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f,-1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f,-1.0f,
-            -1.0f, 1.0f,-1.0f,
-            1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f,-1.0f,
-            -1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            1.0f,-1.0f, 1.0f
+            -scaleFactor,-scaleFactor,-scaleFactor, // triangle 1 : begin
+            -scaleFactor,-scaleFactor, scaleFactor,
+            -scaleFactor, scaleFactor, scaleFactor, // triangle 1 : end
+            scaleFactor, scaleFactor,-scaleFactor, // triangle 2 : begin
+            -scaleFactor,-scaleFactor,-scaleFactor,
+            -scaleFactor, scaleFactor,-scaleFactor, // triangle 2 : end
+            scaleFactor,-scaleFactor, scaleFactor,
+            -scaleFactor,-scaleFactor,-scaleFactor,
+            scaleFactor,-scaleFactor,-scaleFactor,
+            scaleFactor, scaleFactor,-scaleFactor,
+            scaleFactor,-scaleFactor,-scaleFactor,
+            -scaleFactor,-scaleFactor,-scaleFactor,
+            -scaleFactor,-scaleFactor,-scaleFactor,
+            -scaleFactor, scaleFactor, scaleFactor,
+            -scaleFactor, scaleFactor,-scaleFactor,
+            scaleFactor,-scaleFactor, scaleFactor,
+            -scaleFactor,-scaleFactor, scaleFactor,
+            -scaleFactor,-scaleFactor,-scaleFactor,
+            -scaleFactor, scaleFactor, scaleFactor,
+            -scaleFactor,-scaleFactor, scaleFactor,
+            scaleFactor,-scaleFactor, scaleFactor,
+            scaleFactor, scaleFactor, scaleFactor,
+            scaleFactor,-scaleFactor,-scaleFactor,
+            scaleFactor, scaleFactor,-scaleFactor,
+            scaleFactor,-scaleFactor,-scaleFactor,
+            scaleFactor, scaleFactor, scaleFactor,
+            scaleFactor,-scaleFactor, scaleFactor,
+            scaleFactor, scaleFactor, scaleFactor,
+            scaleFactor, scaleFactor,-scaleFactor,
+            -scaleFactor, scaleFactor,-scaleFactor,
+            scaleFactor, scaleFactor, scaleFactor,
+            -scaleFactor, scaleFactor,-scaleFactor,
+            -scaleFactor, scaleFactor, scaleFactor,
+            scaleFactor, scaleFactor, scaleFactor,
+            -scaleFactor, scaleFactor, scaleFactor,
+            scaleFactor,-scaleFactor, scaleFactor
     };
 
     // define colour: r, g, b, opacity
-    float colour[] = {1f, 0f, 0f, 1.0f};
+    float colour[] = {1f, 0f, 0f, 1f};
 
     // define simple vertex and fragment shaders
     // this is all boilerplate taken from a rendering tutorial
@@ -154,6 +154,13 @@ public class Triangle {
 
         // disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+    }
+
+    public void setColour(float r, float g, float b, float opacity) {
+        colour[0] = r / 255;
+        colour[1] = g / 255;
+        colour[2] = b / 255;
+        colour[3] = opacity;
     }
 
 }

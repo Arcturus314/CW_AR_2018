@@ -42,16 +42,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     // determined by sensors
     private float[] lookAtVector = new float[3];
 
-    // scale factors for translating objects based on sensor readings
-    // determined experimentally to create nice FOV
-    //private final float HORIZONTAL_SCALE_FACTOR = 4.2f;
-    //private final float VERTICAL_SCALE_FACTOR = 4.7f;
-    private final float HORIZONTAL_SCALE_FACTOR = 1f;
-    private final float VERTICAL_SCALE_FACTOR = 1f;
-    private final float PITCH_OFFSET = 0f;
-    private final float YAW_OFFSET = 0f;
-    private final float ROLL_OFFSET = 0f;
-
     // Context object so that we can access sensor data in the renderer class
     Context mContext;
 
@@ -66,6 +56,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
     private float latDist = 0f; //east-west     currently up-down, fixed and now correct
     private float altDist = 0f; //up-down      currently east-west, fixed and now correct
 
+    public float[][] flightDists;
+
+    private Triangle[] flightDrawings;
+
+    boolean drawing = false;
 
     public MyGLRenderer(Context context) {
         mContext = context;
@@ -91,7 +86,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         // Set the background frame colour
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // initialise a triangle
-        mTriangle = new Triangle();
         lookAtVector[0] = 0f;
         lookAtVector[1] = 0f;
         lookAtVector[2] = 0f;
@@ -109,6 +103,36 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // calculate the projection, view, and model transformation
         Matrix.setIdentityM(mTranslateM, 0);
+
+        // create triangles for every flight
+        if (flightDists != null) {
+            drawing = true;
+            //Log.i("Flight Dists: ", Arrays.deepToString(flightDists));
+            flightDrawings = new Triangle[flightDists.length];
+            for (int i = 0; i < flightDists.length; i++) {
+                flightDrawings[i] = new Triangle();
+            }
+            for (int i = 0; i < flightDists.length; i++) {
+                Triangle flight = flightDrawings[i];
+                //Log.i("flight: ", " " + flight);
+                float lat = flightDists[i][0];
+                float lon = flightDists[i][1];
+                float alt = flightDists[i][2];
+                Matrix.setIdentityM(mTranslateM, 0);
+                Matrix.translateM(mTranslateM, 0, lat, alt, -lon);
+
+                Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+
+                Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslateM, 0);
+                //Log.i("Drawing flight: ", lat + " " + lon + " " + alt + " ");
+                if (i == flightDists.length - 1) {
+                    flight.setColour(0f, 255f, 0f, 1f);
+                }
+                flight.draw(scratch);
+            }
+            drawing = false;
+        }
+
         /**
          * The coordinate system below works for the phone
          * positive x is towards north, negative x is towards south (update- pos x towards East, neg x towards West)
@@ -116,24 +140,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
          * positive z is towards east, negative z is towards west (update- pos z towards South, neg z towards North) update 2: ?????? but updated comment
          */
 
-        //Matrix.translateM(mTranslateM, 0, latDist, altDist, -1*longDist);
-
         /**
          * This coordinate system works for the glasses
          * positive x is towards north, negative x is towards south
          * positive y is towards sky, negative y is towards ground
          * positive z is towards east, negative z is towards west
          */
-        //Matrix.translateM(mTranslateM, 0, latDist, altDist, -longDist);
-        Matrix.translateM(mTranslateM, 0, 20, 0, 0);
-        Matrix.multiplyMM(transformationMatrix, 0, mTranslateM, 0, mRotationMatrix, 0);
-
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-        //Matrix.multiplyMM(modelViewMatrix, 0, mMVPMatrix, 0, mTranslateM, 0);
-
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, transformationMatrix, 0);
-        mTriangle.draw(scratch);
-        //Log.i("Drawing: ", "scratch: " + print16ArrByElement(scratch));
 
     }
 
@@ -202,7 +214,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
             yaw = orientationVector[0];
             roll = orientationVector[2];
             //Log.i("Sensor OV Data ", Arrays.toString(orientationVector));
-            Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
+            //Log.i("eulerAngleReadings: ", "pitch: " + pitch * 180 / Math.PI + " yaw " + yaw * 180 / Math.PI + " roll " + roll * 180 / Math.PI);
             //Log.i("distance from tree", "latDist: " + latDist + " longDist " + longDist + " altDist " + altDist);
             // https://learnopengl.com/Getting-started/Camera
             lookAtVector[0] = (float) ( Math.cos(pitch) * Math.cos(yaw) ); // lookAtX
@@ -225,8 +237,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // this projection matrix is applied to object coordinates in the onDrawFrame() method
         // this code populates a projection matrix to only render objects in the given frustrum
-        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 500);
-        // Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+        Matrix.perspectiveM(mProjectionMatrix, 0, 23, ratio, 0.1f, 5000);
     }
 
     public static int loadShader(int type, String shaderCode) {
